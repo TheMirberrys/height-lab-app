@@ -98,7 +98,7 @@ export default function ResultsPage() {
 
   return (
     <View style={styles.container}>
-      <AppHeader />
+      <AppHeader showBackButton onBackPress={() => router.back()} />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <FinalPredictionCard 
