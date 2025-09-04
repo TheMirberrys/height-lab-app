@@ -53,10 +53,10 @@ export default function FormPage() {
           />
 
           <FormInput
-            label="Current Height (inches)"
+            label="Current Height (cm)"
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
-            placeholder="e.g., 42.5"
+            placeholder="e.g., 108"
             keyboardType="numeric"
             required
           />
@@ -69,10 +69,10 @@ export default function FormPage() {
           />
 
           <FormInput
-            label="Height at Age 2 (inches)"
+            label="Height at Age 2 (cm)"
             value={formData.heightAt2}
             onChangeText={(text) => setFormData({...formData, heightAt2: text})}
-            placeholder="e.g., 34.5"
+            placeholder="e.g., 88"
             keyboardType="numeric"
             helpText="Optional - improves accuracy if known"
           />
@@ -84,19 +84,19 @@ export default function FormPage() {
           icon={<Ruler size={20} color={colors.success[500]} />}
         >
           <FormInput
-            label="Mother's Height (inches)"
+            label="Mother's Height (cm)"
             value={formData.motherHeight}
             onChangeText={(text) => setFormData({...formData, motherHeight: text})}
-            placeholder="e.g., 65.5"
+            placeholder="e.g., 166"
             keyboardType="numeric"
             required
           />
 
           <FormInput
-            label="Father's Height (inches)"
+            label="Father's Height (cm)"
             value={formData.fatherHeight}
             onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
-            placeholder="e.g., 71.0"
+            placeholder="e.g., 180"
             keyboardType="numeric"
             required
           />
