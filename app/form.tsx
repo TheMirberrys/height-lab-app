@@ -5,6 +5,7 @@ import { User, Ruler } from 'lucide-react-native';
 import { AppHeader } from '@/components/ui/AppHeader';
 import { FormSection } from '@/components/form/FormSection';
 import { FormInput } from '@/components/form/FormInput';
+import { HeightInput } from '@/components/form/HeightInput';
 import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
