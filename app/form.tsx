@@ -18,6 +18,7 @@ export default function FormPage() {
     childHeight: '',
     childAgeYears: '',
     childAgeMonths: '',
+    childAgeWeeks: '',
     childGender: '',
     heightAt2: '',
     motherHeight: '',
@@ -30,6 +31,8 @@ export default function FormPage() {
     motherHeight: 'cm',
     fatherHeight: 'cm',
   });
+
+  const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
   const handleSubmit = () => {
     // Validate required fields
     if (!formData.childHeight || !formData.childAgeYears || !formData.childGender || !formData.motherHeight || !formData.fatherHeight) {
@@ -73,8 +76,12 @@ export default function FormPage() {
           <AgeInputs
             years={formData.childAgeYears}
             months={formData.childAgeMonths}
+            weeks={formData.childAgeWeeks}
             onYearsChange={(text) => setFormData({...formData, childAgeYears: text})}
             onMonthsChange={(text) => setFormData({...formData, childAgeMonths: text})}
+            onWeeksChange={(text) => setFormData({...formData, childAgeWeeks: text})}
+            ageUnit={ageUnit}
+            onAgeUnitChange={setAgeUnit}
           />
 
           <HeightInput
