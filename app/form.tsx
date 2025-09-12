@@ -5,7 +5,6 @@ import { User, Ruler } from 'lucide-react-native';
 import { AppHeader } from '@/components/ui/AppHeader';
 import { FormSection } from '@/components/form/FormSection';
 import { FormInput } from '@/components/form/FormInput';
-import { HeightInput } from '@/components/form/HeightInput';
 import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
@@ -18,66 +17,23 @@ export default function FormPage() {
     childHeight: '',
     childAgeYears: '',
     childAgeMonths: '',
-    childAgeWeeks: '',
     childGender: '',
     heightAt2: '',
     motherHeight: '',
     fatherHeight: '',
   });
 
-  const [units, setUnits] = useState({
-    childHeightUnit: 'cm' as 'cm' | 'inches',
-    heightAt2Unit: 'cm' as 'cm' | 'inches',
-    motherHeightUnit: 'cm' as 'cm' | 'inches',
-    fatherHeightUnit: 'cm' as 'cm' | 'inches',
-    ageUnit: 'years-months' as 'years-months' | 'weeks',
-  });
-
-  // Helper function to convert units for calculations
-  const convertToInches = (value: string, unit: 'cm' | 'inches'): number => {
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return 0;
-    return unit === 'cm' ? numValue / 2.54 : numValue;
-  };
-
-  // Helper function to convert age to years
-  const convertToYears = (): number => {
-    if (units.ageUnit === 'weeks') {
-      const weeks = parseFloat(formData.childAgeWeeks);
-      return weeks / 52.1775; // More precise weeks per year
-    } else {
-      const years = parseFloat(formData.childAgeYears) || 0;
-      const months = parseFloat(formData.childAgeMonths) || 0;
-      return years + (months / 12);
-    }
-  };
   const handleSubmit = () => {
     // Validate required fields
-    const ageValid = units.ageUnit === 'weeks' ? formData.childAgeWeeks : formData.childAgeYears;
-    if (!formData.childHeight || !ageValid || !formData.childGender || !formData.motherHeight || !formData.fatherHeight) {
+    if (!formData.childHeight || !formData.childAgeYears || !formData.childGender || !formData.motherHeight || !formData.fatherHeight) {
       Alert.alert('Missing Information', 'Please fill in all required fields marked with *');
       return;
     }
 
-    // Convert all heights to inches for consistent calculations
-    const childHeightInches = convertToInches(formData.childHeight, units.childHeightUnit);
-    const heightAt2Inches = formData.heightAt2 ? convertToInches(formData.heightAt2, units.heightAt2Unit) : 0;
-    const motherHeightInches = convertToInches(formData.motherHeight, units.motherHeightUnit);
-    const fatherHeightInches = convertToInches(formData.fatherHeight, units.fatherHeightUnit);
-    const ageInYears = convertToYears();
-
-    // Navigate to results with converted data
+    // Navigate to results with form data
     router.push({
       pathname: '/results',
-      params: {
-        childHeight: childHeightInches.toString(),
-        childAgeYears: ageInYears.toString(),
-        childAgeMonths: '0', // Not needed since we have total years
-        childGender: formData.childGender,
-        heightAt2: heightAt2Inches.toString(),
-        motherHeight: motherHeightInches.toString(),
-        fatherHeight: fatherHeightInches.toString(),
-      }
+      params: formData
     });
   };
 
@@ -97,33 +53,27 @@ export default function FormPage() {
           />
 
           <HeightInput
-            label="Current Height (cm)"
+            label={`Current Height`}
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
-            placeholder={units.childHeightUnit === 'cm' ? "e.g., 108" : "e.g., 42.5"}
-            unit={units.childHeightUnit}
-            onUnitChange={(unit) => setUnits({...units, childHeightUnit: unit})}
+            placeholder="e.g., 108"
+            keyboardType="numeric"
             required
           />
 
           <AgeInputs
             years={formData.childAgeYears}
             months={formData.childAgeMonths}
-            weeks={formData.childAgeWeeks}
             onYearsChange={(text) => setFormData({...formData, childAgeYears: text})}
             onMonthsChange={(text) => setFormData({...formData, childAgeMonths: text})}
-            onWeeksChange={(text) => setFormData({...formData, childAgeWeeks: text})}
-            ageUnit={units.ageUnit}
-            onAgeUnitChange={(unit) => setUnits({...units, ageUnit: unit})}
           />
 
           <HeightInput
-            label="Height at Age 2 (cm)"
+            label={`Height at Age 2`}
             value={formData.heightAt2}
             onChangeText={(text) => setFormData({...formData, heightAt2: text})}
-            placeholder={units.heightAt2Unit === 'cm' ? "e.g., 88" : "e.g., 34.6"}
-            unit={units.heightAt2Unit}
-            onUnitChange={(unit) => setUnits({...units, heightAt2Unit: unit})}
+            placeholder="e.g., 88"
+            keyboardType="numeric"
             helpText="Optional - improves accuracy if known"
           />
         </FormSection>
@@ -134,22 +84,20 @@ export default function FormPage() {
           icon={<Ruler size={20} color={colors.success[500]} />}
         >
           <HeightInput
-            label="Mother's Height (cm)"
+            label={`Mother's Height`}
             value={formData.motherHeight}
             onChangeText={(text) => setFormData({...formData, motherHeight: text})}
-            placeholder={units.motherHeightUnit === 'cm' ? "e.g., 166" : "e.g., 65.4"}
-            unit={units.motherHeightUnit}
-            onUnitChange={(unit) => setUnits({...units, motherHeightUnit: unit})}
+            placeholder="e.g., 166"
+            keyboardType="numeric"
             required
           />
 
           <HeightInput
-            label="Father's Height (cm)"
+            label={`Father's Height`}
             value={formData.fatherHeight}
             onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
-            placeholder={units.fatherHeightUnit === 'cm' ? "e.g., 180" : "e.g., 70.9"}
-            unit={units.fatherHeightUnit}
-            onUnitChange={(unit) => setUnits({...units, fatherHeightUnit: unit})}
+            placeholder="e.g., 180"
+            keyboardType="numeric"
             required
           />
         </FormSection>
