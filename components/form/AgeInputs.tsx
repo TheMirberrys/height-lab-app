@@ -27,7 +27,7 @@ export function AgeInputs({
   return (
     <View style={styles.container}>
       <UnitToggle
-        options={['years + months', 'weeks']}
+        options={['Years & Months', 'Weeks']}
         selectedOption={ageUnit === 'years-months' ? 'years + months' : 'weeks'}
         onOptionChange={(option) => onAgeUnitChange(option === 'years + months' ? 'years-months' : 'weeks')}
         label="Age Format"
