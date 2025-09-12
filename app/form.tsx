@@ -66,7 +66,7 @@ export default function FormPage() {
             label={`Current Height`}
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
-            placeholder="e.g., 108"
+            placeholder="0"
             keyboardType="numeric"
             required
             unit={heightUnits.childHeight}
