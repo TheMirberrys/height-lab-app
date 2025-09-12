@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors, spacing, typography, borderRadius } from '@/theme/colors';
 
 interface UnitToggleProps {
-  options: string[]; // expects exactly 2 options, e.g. ["°C", "°F"]
+  options: string[];
   selectedOption: string;
   onOptionChange: (option: string) => void;
   label?: string;
@@ -14,30 +14,29 @@ export function UnitToggle({ options, selectedOption, onOptionChange, label, inl
     <View style={[styles.container, inline && styles.inlineContainer]}>
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.toggleContainer, inline && styles.inlineToggleContainer]}>
-        {options.map((option, index) => (
-          <TouchableOpacity
-            key={option}
-            style={[styles.half]}
-            onPress={() => onOptionChange(option)}
-            activeOpacity={0.8}
-          >
-            {/* Knob that moves to the selected side */}
-            {selectedOption === option && (
-              <View
-                style={[
-                  styles.knob,
-                  index === 0 ? styles.knobLeft : styles.knobRight,
-                ]}
-              />
-            )}
-            <Text style={[
-              styles.toggleText,
-              selectedOption === option && styles.toggleTextActive
-            ]}>
-              {option}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {/* Left label */}
+        <TouchableOpacity onPress={() => onOptionChange(options[0])} style={styles.side}>
+          <Text style={[styles.toggleText, selectedOption === options[0] && styles.toggleTextActive]}>
+            {options[0]}
+          </Text>
+        </TouchableOpacity>
+
+        {/* Toggle pill */}
+        <View style={styles.pill}>
+          <View
+            style={[
+              styles.knob,
+              selectedOption === options[1] && styles.knobRight
+            ]}
+          />
+        </View>
+
+        {/* Right label */}
+        <TouchableOpacity onPress={() => onOptionChange(options[1])} style={styles.side}>
+          <Text style={[styles.toggleText, selectedOption === options[1] && styles.toggleTextActive]}>
+            {options[1]}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -61,38 +60,13 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.neutral[200],
-    borderRadius: 20,
-    overflow: 'hidden',
+    alignItems: 'center',
   },
   inlineToggleContainer: {
     marginLeft: spacing.sm,
   },
-  half: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.sm,
-    position: 'relative',
-  },
-  knob: {
-    ...StyleSheet.absoluteFillObject,
-    margin: 2,
-    borderRadius: 20,
-    backgroundColor: colors.white,
-    shadowColor: colors.shadow.default,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  knobLeft: {
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  knobRight: {
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
+  side: {
+    paddingHorizontal: spacing.sm,
   },
   toggleText: {
     fontSize: typography.sizes.sm,
@@ -101,5 +75,23 @@ const styles = StyleSheet.create({
   },
   toggleTextActive: {
     color: colors.neutral[700],
+  },
+  pill: {
+    width: 40,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: colors.neutral[300],
+    justifyContent: 'center',
+    marginHorizontal: spacing.sm,
+  },
+  knob: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: colors.white,
+    marginLeft: 1,
+  },
+  knobRight: {
+    marginLeft: 21,
   },
 });
