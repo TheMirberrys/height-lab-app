@@ -24,6 +24,12 @@ export default function FormPage() {
     fatherHeight: '',
   });
 
+  const [heightUnits, setHeightUnits] = useState({
+    childHeight: 'cm',
+    heightAt2: 'cm',
+    motherHeight: 'cm',
+    fatherHeight: 'cm',
+  });
   const handleSubmit = () => {
     // Validate required fields
     if (!formData.childHeight || !formData.childAgeYears || !formData.childGender || !formData.motherHeight || !formData.fatherHeight) {
@@ -60,6 +66,8 @@ export default function FormPage() {
             placeholder="e.g., 108"
             keyboardType="numeric"
             required
+            unit={heightUnits.childHeight}
+            onUnitChange={(unit) => setHeightUnits({...heightUnits, childHeight: unit})}
           />
 
           <AgeInputs
@@ -76,6 +84,8 @@ export default function FormPage() {
             placeholder="e.g., 88"
             keyboardType="numeric"
             helpText="Optional - improves accuracy if known"
+            unit={heightUnits.heightAt2}
+            onUnitChange={(unit) => setHeightUnits({...heightUnits, heightAt2: unit})}
           />
         </FormSection>
 
@@ -91,6 +101,8 @@ export default function FormPage() {
             placeholder="e.g., 166"
             keyboardType="numeric"
             required
+            unit={heightUnits.motherHeight}
+            onUnitChange={(unit) => setHeightUnits({...heightUnits, motherHeight: unit})}
           />
 
           <HeightInput
@@ -100,6 +112,8 @@ export default function FormPage() {
             placeholder="e.g., 180"
             keyboardType="numeric"
             required
+            unit={heightUnits.fatherHeight}
+            onUnitChange={(unit) => setHeightUnits({...heightUnits, fatherHeight: unit})}
           />
         </FormSection>
 
