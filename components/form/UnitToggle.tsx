@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { colors, spacing, typography, borderRadius } from '@/theme/colors';
 
 interface UnitToggleProps {
-  options: string[];
+  options: string[]; // expects exactly 2 options, e.g. ["°C", "°F"]
   selectedOption: string;
   onOptionChange: (option: string) => void;
   label?: string;
@@ -10,29 +11,51 @@ interface UnitToggleProps {
 }
 
 export function UnitToggle({ options, selectedOption, onOptionChange, label, inline = false }: UnitToggleProps) {
+  const knobPosition = useRef(new Animated.Value(selectedOption === options[0] ? 0 : 1)).current;
+
+  // Animate knob when selection changes
+  useEffect(() => {
+    Animated.spring(knobPosition, {
+      toValue: selectedOption === options[0] ? 0 : 1,
+      useNativeDriver: false,
+      friction: 8,
+      tension: 70,
+    }).start();
+  }, [selectedOption]);
+
+  const knobTranslate = knobPosition.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
+
   return (
     <View style={[styles.container, inline && styles.inlineContainer]}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.toggleContainer, inline && styles.inlineToggleContainer]}>
+
+      <View style={[styles.toggleWrapper]}>
         {/* Left label */}
-        <TouchableOpacity onPress={() => onOptionChange(options[0])} style={styles.side}>
+        <TouchableOpacity onPress={() => onOptionChange(options[0])}>
           <Text style={[styles.toggleText, selectedOption === options[0] && styles.toggleTextActive]}>
             {options[0]}
           </Text>
         </TouchableOpacity>
 
-        {/* Toggle pill */}
-        <View style={styles.pill}>
-          <View
+        {/* Pill with knob */}
+        <TouchableOpacity
+          style={[styles.pill]}
+          activeOpacity={1}
+          onPress={() => onOptionChange(selectedOption === options[0] ? options[1] : options[0])}
+        >
+          <Animated.View
             style={[
               styles.knob,
-              selectedOption === options[1] && styles.knobRight
+              { transform: [{ translateX: knobTranslate }] },
             ]}
           />
-        </View>
+        </TouchableOpacity>
 
         {/* Right label */}
-        <TouchableOpacity onPress={() => onOptionChange(options[1])} style={styles.side}>
+        <TouchableOpacity onPress={() => onOptionChange(options[1])}>
           <Text style={[styles.toggleText, selectedOption === options[1] && styles.toggleTextActive]}>
             {options[1]}
           </Text>
@@ -58,15 +81,29 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
     marginRight: spacing.md,
   },
-  toggleContainer: {
+  toggleWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  inlineToggleContainer: {
-    marginLeft: spacing.sm,
+  pill: {
+    width: 50,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: colors.neutral[200],
+    marginHorizontal: spacing.sm,
+    justifyContent: 'center',
+    padding: 2,
   },
-  side: {
-    paddingHorizontal: spacing.sm,
+  knob: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.white,
+    shadowColor: colors.shadow.default,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   toggleText: {
     fontSize: typography.sizes.sm,
@@ -75,23 +112,5 @@ const styles = StyleSheet.create({
   },
   toggleTextActive: {
     color: colors.neutral[700],
-  },
-  pill: {
-    width: 40,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: colors.neutral[300],
-    justifyContent: 'center',
-    marginHorizontal: spacing.sm,
-  },
-  knob: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: colors.white,
-    marginLeft: 1,
-  },
-  knobRight: {
-    marginLeft: 21,
   },
 });
