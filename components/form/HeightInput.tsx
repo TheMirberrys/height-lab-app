@@ -18,12 +18,18 @@ const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
   suffix: string;
   style?: any;
 }) => {
+  const handleTextChange = (text: string) => {
+    // Only allow positive integers (no decimals, no negative numbers)
+    const numericText = text.replace(/[^0-9]/g, '');
+    onChangeText(numericText);
+  };
+
   return (
     <View style={[styles.inputContainer, style]}>
       <TextInput
         style={styles.inputWithSuffix}
         value={value}
-        onChangeText={onChangeText}
+        onChangeText={handleTextChange}
         keyboardType="numeric"
       />
       <Text style={styles.suffix}>{suffix}</Text>
@@ -49,20 +55,20 @@ export function HeightInput({
   };
 
   const handleFeetInchesChange = (feet: string, inches: string) => {
-    const totalInches = (parseFloat(feet) || 0) * 12 + (parseFloat(inches) || 0);
+    const totalInches = (parseInt(feet) || 0) * 12 + (parseInt(inches) || 0);
     onChangeText(totalInches.toString());
   };
 
   // Convert between cm and inches
   const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
     if (!value || fromUnit === toUnit) return value;
-    const numValue = parseFloat(value);
+    const numValue = parseInt(value);
     if (isNaN(numValue)) return '';
     
     if (fromUnit === 'cm' && toUnit === 'inches') {
-      return (numValue / 2.54).toString();
+      return Math.round(numValue / 2.54).toString();
     } else if (fromUnit === 'inches' && toUnit === 'cm') {
-      return (numValue * 2.54).toString();
+      return Math.round(numValue * 2.54).toString();
     }
     return value;
   };

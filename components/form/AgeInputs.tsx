@@ -20,12 +20,18 @@ const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
   suffix: string;
   required?: boolean;
 }) => {
+  const handleTextChange = (text: string) => {
+    // Only allow positive integers (no decimals, no negative numbers)
+    const numericText = text.replace(/[^0-9]/g, '');
+    onChangeText(numericText);
+  };
+
   return (
     <View style={styles.inputContainer}>
       <TextInput
         style={styles.inputWithSuffix}
         value={value}
-        onChangeText={onChangeText}
+        onChangeText={handleTextChange}
         keyboardType="numeric"
       />
       <Text style={styles.suffix}>{suffix}</Text>
