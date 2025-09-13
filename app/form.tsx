@@ -66,7 +66,6 @@ export default function FormPage() {
             label={`Current Height`}
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
-            placeholder="0"
             keyboardType="numeric"
             required
             unit={heightUnits.childHeight}
@@ -88,7 +87,6 @@ export default function FormPage() {
             label={`Height at Age 2`}
             value={formData.heightAt2}
             onChangeText={(text) => setFormData({...formData, heightAt2: text})}
-            placeholder="e.g., 88"
             keyboardType="numeric"
             helpText="Optional - improves accuracy if known"
             unit={heightUnits.heightAt2}
@@ -105,7 +103,6 @@ export default function FormPage() {
             label={`Mother's Height`}
             value={formData.motherHeight}
             onChangeText={(text) => setFormData({...formData, motherHeight: text})}
-            placeholder="e.g., 166"
             keyboardType="numeric"
             required
             unit={heightUnits.motherHeight}
@@ -116,7 +113,6 @@ export default function FormPage() {
             label={`Father's Height`}
             value={formData.fatherHeight}
             onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
-            placeholder="e.g., 180"
             keyboardType="numeric"
             required
             unit={heightUnits.fatherHeight}
