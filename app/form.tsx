@@ -63,11 +63,10 @@ export default function FormPage() {
           />
 
           <HeightInput
-            label={`Current Height`}
+            label="Current Height"
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
             keyboardType="numeric"
-            required
             unit={heightUnits.childHeight}
             onUnitChange={(unit) => setHeightUnits({...heightUnits, childHeight: unit})}
           />
@@ -84,7 +83,7 @@ export default function FormPage() {
           />
 
           <HeightInput
-            label={`Height at Age 2`}
+            label="Height at Age 2"
             value={formData.heightAt2}
             onChangeText={(text) => setFormData({...formData, heightAt2: text})}
             keyboardType="numeric"
@@ -100,21 +99,19 @@ export default function FormPage() {
           icon={<Ruler size={20} color={colors.success[500]} />}
         >
           <HeightInput
-            label={`Mother's Height`}
+            label="Mother's Height"
             value={formData.motherHeight}
             onChangeText={(text) => setFormData({...formData, motherHeight: text})}
             keyboardType="numeric"
-            required
             unit={heightUnits.motherHeight}
             onUnitChange={(unit) => setHeightUnits({...heightUnits, motherHeight: unit})}
           />
 
           <HeightInput
-            label={`Father's Height`}
+            label="Father's Height"
             value={formData.fatherHeight}
             onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
             keyboardType="numeric"
-            required
             unit={heightUnits.fatherHeight}
             onUnitChange={(unit) => setHeightUnits({...heightUnits, fatherHeight: unit})}
           />
