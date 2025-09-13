@@ -1,7 +1,7 @@
-import { View, StyleSheet } from 'react-native';
-import { FormInput } from './FormInput';
+import { View, Text, StyleSheet } from 'react-native';
+import { TextInput } from 'react-native';
 import { UnitToggle } from './UnitToggle';
-import { spacing } from '@/theme/colors';
+import { colors, spacing, typography, borderRadius } from '@/theme/colors';
 
 interface AgeInputsProps {
   years: string;
@@ -13,6 +13,31 @@ interface AgeInputsProps {
   ageUnit: 'years-months' | 'weeks';
   onAgeUnitChange: (unit: 'years-months' | 'weeks') => void;
 }
+
+const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
+  value: string;
+  onChangeText: (text: string) => void;
+  suffix: string;
+  required?: boolean;
+}) => {
+  const handleTextChange = (text: string) => {
+    // Only allow positive integers (no decimals, no negative numbers)
+    const numericText = text.replace(/[^0-9]/g, '');
+    onChangeText(numericText);
+  };
+
+  return (
+    <View style={styles.inputContainer}>
+      <TextInput
+        style={styles.inputWithSuffix}
+        value={value}
+        onChangeText={handleTextChange}
+        keyboardType="numeric"
+      />
+      <Text style={styles.suffix}>{suffix}</Text>
+    </View>
+  );
+};
 
 export function AgeInputs({ 
   years, 
@@ -26,46 +51,40 @@ export function AgeInputs({
 }: AgeInputsProps) {
   return (
     <View style={styles.container}>
-      <UnitToggle
-        options={['Years & Months', 'Weeks']}
-        selectedOption={ageUnit === 'years-months' ? 'years + months' : 'weeks'}
-        onOptionChange={(option) => onAgeUnitChange(option === 'years + months' ? 'years-months' : 'weeks')}
-        label="Age Format"
-      />
-      
-      {ageUnit === 'years-months' ? (
-        <View style={styles.ageRow}>
-          <View style={styles.ageInput}>
-            <FormInput
-              label="Age (Years)"
-              value={years}
-              onChangeText={onYearsChange}
-              placeholder="e.g., 8"
-              keyboardType="numeric"
-              required
-            />
-          </View>
-          <View style={styles.ageInput}>
-            <FormInput
-              label="Age (Months)"
-              value={months}
-              onChangeText={onMonthsChange}
-              placeholder="e.g., 6"
-              keyboardType="numeric"
-            />
-          </View>
-        </View>
-      ) : (
-        <FormInput
-          label="Age (Weeks)"
-          value={weeks}
-          onChangeText={onWeeksChange}
-          placeholder="e.g., 416"
-          keyboardType="numeric"
-          required
+      <View style={styles.labelRow}>
+        <Text style={styles.label}>Age</Text>
+        <UnitToggle
+          options={['Years & Months', 'Weeks']}
+          selectedOption={ageUnit === 'years-months' ? 'Years & Months' : 'Weeks'}
+          onOptionChange={(option) => onAgeUnitChange(option === 'Years & Months' ? 'years-months' : 'weeks')}
+          inline
         />
       )}
       </View>
+      
+      {ageUnit === 'years-months' ? (
+        <View style={styles.ageRow}>
+          <InputWithSuffix
+            value={years}
+            onChangeText={onYearsChange}
+            suffix="years"
+            required
+          />
+          <InputWithSuffix
+            value={months}
+            onChangeText={onMonthsChange}
+            suffix="months"
+          />
+        </View>
+      ) : (
+        <InputWithSuffix
+          value={weeks}
+          onChangeText={onWeeksChange}
+          suffix="weeks"
+          required
+        />
+      )}
+    </View>
   );
 }
 
@@ -73,11 +92,40 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.xl,
   },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  label: {
+    fontSize: typography.sizes.base,
+    fontWeight: typography.weights.medium,
+    color: colors.neutral[700],
+  },
   ageRow: {
     flexDirection: 'row',
     gap: spacing.md,
   },
-  ageInput: {
+  inputContainer: {
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.neutral[200],
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
     flex: 1,
+  },
+  inputWithSuffix: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    fontSize: typography.sizes.md,
+    color: colors.neutral[800],
+  },
+  suffix: {
+    fontSize: typography.sizes.md,
+    color: colors.neutral[400],
+    marginLeft: spacing.xs,
   },
 });

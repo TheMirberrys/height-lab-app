@@ -5,7 +5,6 @@ interface FormInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-  placeholder?: string;
   required?: boolean;
   helpText?: string;
   keyboardType?: 'default' | 'numeric';
@@ -15,11 +14,20 @@ export function FormInput({
   label, 
   value, 
   onChangeText, 
-  placeholder, 
   required = false, 
   helpText,
   keyboardType = 'default' 
 }: FormInputProps) {
+  const handleTextChange = (text: string) => {
+    if (keyboardType === 'numeric') {
+      // Only allow positive integers (no decimals, no negative numbers)
+      const numericText = text.replace(/[^0-9]/g, '');
+      onChangeText(numericText);
+    } else {
+      onChangeText(text);
+    }
+  };
+
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.label}>
@@ -29,8 +37,7 @@ export function FormInput({
       <TextInput
         style={styles.input}
         value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
+        onChangeText={handleTextChange}
         keyboardType={keyboardType}
       />
     </View>

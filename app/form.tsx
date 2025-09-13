@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { User, Ruler } from 'lucide-react-native';
@@ -48,10 +48,19 @@ export default function FormPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContainer}
+      >
         {/* Child Information */}
         <FormSection 
           title="Child Details" 
@@ -63,12 +72,10 @@ export default function FormPage() {
           />
 
           <HeightInput
-            label={`Current Height`}
+            label="Current Height"
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
-            placeholder="0"
             keyboardType="numeric"
-            required
             unit={heightUnits.childHeight}
             onUnitChange={(unit) => setHeightUnits({...heightUnits, childHeight: unit})}
           />
@@ -85,10 +92,9 @@ export default function FormPage() {
           />
 
           <HeightInput
-            label={`Height at Age 2`}
+            label="Height at Age 2"
             value={formData.heightAt2}
             onChangeText={(text) => setFormData({...formData, heightAt2: text})}
-            placeholder="e.g., 88"
             keyboardType="numeric"
             helpText="Optional - improves accuracy if known"
             unit={heightUnits.heightAt2}
@@ -102,23 +108,19 @@ export default function FormPage() {
           icon={<Ruler size={20} color={colors.success[500]} />}
         >
           <HeightInput
-            label={`Mother's Height`}
+            label="Mother's Height"
             value={formData.motherHeight}
             onChangeText={(text) => setFormData({...formData, motherHeight: text})}
-            placeholder="e.g., 166"
             keyboardType="numeric"
-            required
             unit={heightUnits.motherHeight}
             onUnitChange={(unit) => setHeightUnits({...heightUnits, motherHeight: unit})}
           />
 
           <HeightInput
-            label={`Father's Height`}
+            label="Father's Height"
             value={formData.fatherHeight}
             onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
-            placeholder="e.g., 180"
             keyboardType="numeric"
-            required
             unit={heightUnits.fatherHeight}
             onUnitChange={(unit) => setHeightUnits({...heightUnits, fatherHeight: unit})}
           />
@@ -129,8 +131,10 @@ export default function FormPage() {
           onPress={handleSubmit}
           variant="secondary"
         />
+        
+        <View style={styles.bottomSpacer} />
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -141,6 +145,12 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContainer: {
     padding: spacing.xxl,
+    flexGrow: 1,
+  },
+  bottomSpacer: {
+    height: 100, // Extra space to ensure button is accessible above mobile navigation
   },
 });

@@ -9,7 +9,7 @@ interface GenderSelectorProps {
 export function GenderSelector({ value, onValueChange }: GenderSelectorProps) {
   return (
     <View style={styles.inputGroup}>
-      <Text style={styles.label}>Gender *</Text>
+      <Text style={styles.label}>Gender</Text>
       <View style={styles.genderButtons}>
         <TouchableOpacity
           style={[styles.genderButton, value === 'male' && styles.genderButtonActive]}
