@@ -14,7 +14,7 @@ interface AgeInputsProps {
   onAgeUnitChange: (unit: 'years-months' | 'weeks') => void;
 }
 
-const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, required = false }: {
+const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
   value: string;
   onChangeText: (text: string) => void;
   suffix: string;
@@ -26,7 +26,6 @@ const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, required = 
         style={styles.inputWithSuffix}
         value={value}
         onChangeText={onChangeText}
-        placeholder={placeholder}
         keyboardType="numeric"
       />
       <Text style={styles.suffix}>{suffix}</Text>
