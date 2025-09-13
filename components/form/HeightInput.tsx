@@ -6,17 +6,15 @@ interface HeightInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-  placeholder?: string;
   required?: boolean;
   helpText?: string;
   unit: 'cm' | 'inches';
   onUnitChange: (unit: 'cm' | 'inches') => void;
 }
 
-const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, style }: {
+const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
   value: string;
   onChangeText: (text: string) => void;
-  placeholder?: string;
   suffix: string;
   style?: any;
 }) => {
@@ -26,7 +24,6 @@ const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, style }: {
         style={styles.inputWithSuffix}
         value={value}
         onChangeText={onChangeText}
-        placeholder={placeholder}
         keyboardType="numeric"
       />
       <Text style={styles.suffix}>{suffix}</Text>
@@ -38,7 +35,6 @@ export function HeightInput({
   label, 
   value, 
   onChangeText, 
-  placeholder, 
   required = false, 
   helpText,
   unit,
