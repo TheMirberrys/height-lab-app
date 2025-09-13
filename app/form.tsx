@@ -122,6 +122,8 @@ export default function FormPage() {
           onPress={handleSubmit}
           variant="secondary"
         />
+        
+        <View style={styles.bottomSpacer} />
       </ScrollView>
     </View>
   );
@@ -135,5 +137,8 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: spacing.xxl,
+  },
+  bottomSpacer: {
+    height: 100, // Extra space to ensure button is accessible above mobile navigation
   },
 });
