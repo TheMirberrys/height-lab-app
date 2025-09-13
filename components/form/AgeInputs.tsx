@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native';
 import { UnitToggle } from './UnitToggle';
-import { colors, spacing, typography } from '@/theme/colors';
+import { colors, spacing, typography, borderRadius } from '@/theme/colors';
 
 interface AgeInputsProps {
   years: string;
