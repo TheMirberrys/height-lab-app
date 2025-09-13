@@ -5,7 +5,6 @@ interface FormInputProps {
   label: string;
   value: string;
   onChangeText: (text: string) => void;
-  placeholder?: string;
   required?: boolean;
   helpText?: string;
   keyboardType?: 'default' | 'numeric';
@@ -15,7 +14,6 @@ export function FormInput({
   label, 
   value, 
   onChangeText, 
-  placeholder, 
   required = false, 
   helpText,
   keyboardType = 'default' 
@@ -30,7 +28,6 @@ export function FormInput({
         style={styles.input}
         value={value}
         onChangeText={onChangeText}
-        placeholder={placeholder}
         keyboardType={keyboardType}
       />
     </View>
