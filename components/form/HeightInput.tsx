@@ -37,6 +37,7 @@ const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
   );
 };
 
+
 export function HeightInput({ 
   label, 
   value, 
@@ -99,6 +100,7 @@ export function HeightInput({
       
       {unit === 'inches' ? (
         <View style={styles.feetInchesRow}>
+
           <InputWithSuffix
             value={feet}
             onChangeText={(text) => handleFeetInchesChange(text, inches)}
@@ -153,6 +155,7 @@ const styles = StyleSheet.create({
   inchesInput: {
     flex: 1,
   },
+
   inputContainer: {
     backgroundColor: colors.white,
     borderWidth: 1,
