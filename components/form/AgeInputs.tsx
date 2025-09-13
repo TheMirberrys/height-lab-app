@@ -17,7 +17,6 @@ interface AgeInputsProps {
 const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, required = false }: {
   value: string;
   onChangeText: (text: string) => void;
-  placeholder?: string;
   suffix: string;
   required?: boolean;
 }) => {
@@ -62,14 +61,12 @@ export function AgeInputs({
           <InputWithSuffix
             value={years}
             onChangeText={onYearsChange}
-            placeholder="8"
             suffix="years"
             required
           />
           <InputWithSuffix
             value={months}
             onChangeText={onMonthsChange}
-            placeholder="6"
             suffix="months"
           />
         </View>
@@ -77,7 +74,6 @@ export function AgeInputs({
         <InputWithSuffix
           value={weeks}
           onChangeText={onWeeksChange}
-          placeholder="416"
           suffix="weeks"
           required
         />
