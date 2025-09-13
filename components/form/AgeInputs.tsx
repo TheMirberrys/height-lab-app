@@ -26,18 +26,21 @@ export function AgeInputs({
 }: AgeInputsProps) {
   return (
     <View style={styles.container}>
-      <UnitToggle
-        options={['Years & Months', 'Weeks']}
-        selectedOption={ageUnit === 'years-months' ? 'years + months' : 'weeks'}
-        onOptionChange={(option) => onAgeUnitChange(option === 'years + months' ? 'years-months' : 'weeks')}
-        label="Age Format"
-      />
+      <View style={styles.labelRow}>
+        <Text style={styles.label}>Age *</Text>
+        <UnitToggle
+          options={['Years & Months', 'Weeks']}
+          selectedOption={ageUnit === 'years-months' ? 'Years & Months' : 'Weeks'}
+          onOptionChange={(option) => onAgeUnitChange(option === 'Years & Months' ? 'years-months' : 'weeks')}
+          inline
+        />
+      </View>
       
       {ageUnit === 'years-months' ? (
         <View style={styles.ageRow}>
           <View style={styles.ageInput}>
             <FormInput
-              label="Age (Years)"
+              label="Years"
               value={years}
               onChangeText={onYearsChange}
               placeholder="e.g., 8"
@@ -47,7 +50,7 @@ export function AgeInputs({
           </View>
           <View style={styles.ageInput}>
             <FormInput
-              label="Age (Months)"
+              label="Months"
               value={months}
               onChangeText={onMonthsChange}
               placeholder="e.g., 6"
@@ -57,7 +60,7 @@ export function AgeInputs({
         </View>
       ) : (
         <FormInput
-          label="Age (Weeks)"
+          label="Weeks"
           value={weeks}
           onChangeText={onWeeksChange}
           placeholder="e.g., 416"
@@ -65,13 +68,24 @@ export function AgeInputs({
           required
         />
       )}
-      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.xl,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  label: {
+    fontSize: typography.sizes.base,
+    fontWeight: typography.weights.medium,
+    color: colors.neutral[700],
   },
   ageRow: {
     flexDirection: 'row',
