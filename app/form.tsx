@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { User, Ruler } from 'lucide-react-native';
@@ -48,10 +48,19 @@ export default function FormPage() {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.scrollContainer}
+      >
         {/* Child Information */}
         <FormSection 
           title="Child Details" 
@@ -125,7 +134,7 @@ export default function FormPage() {
         
         <View style={styles.bottomSpacer} />
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -136,7 +145,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContainer: {
     padding: spacing.xxl,
+    flexGrow: 1,
   },
   bottomSpacer: {
     height: 100, // Extra space to ensure button is accessible above mobile navigation
