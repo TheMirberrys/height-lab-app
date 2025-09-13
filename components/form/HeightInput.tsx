@@ -75,14 +75,12 @@ export function HeightInput({
           <InputWithSuffix
             value={feet}
             onChangeText={(text) => handleFeetInchesChange(text, inches)}
-            placeholder="5"
             suffix="ft"
             style={styles.feetInput}
           />
           <InputWithSuffix
             value={inches}
             onChangeText={(text) => handleFeetInchesChange(feet, text)}
-            placeholder="8"
             suffix="in"
             style={styles.inchesInput}
           />
