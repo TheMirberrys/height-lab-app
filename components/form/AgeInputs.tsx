@@ -46,7 +46,7 @@ export function AgeInputs({
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>Age *</Text>
+        <Text style={styles.label}>Age</Text>
         <UnitToggle
           options={['Years & Months', 'Weeks']}
           selectedOption={ageUnit === 'years-months' ? 'Years & Months' : 'Weeks'}
