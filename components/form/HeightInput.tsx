@@ -13,6 +13,27 @@ interface HeightInputProps {
   onUnitChange: (unit: 'cm' | 'inches') => void;
 }
 
+const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, style }: {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  suffix: string;
+  style?: any;
+}) => {
+  return (
+    <View style={[styles.inputContainer, style]}>
+      <TextInput
+        style={styles.inputWithSuffix}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        keyboardType="numeric"
+      />
+      <Text style={styles.suffix}>{suffix}</Text>
+    </View>
+  );
+};
+
 export function HeightInput({ 
   label, 
   value, 
@@ -55,34 +76,27 @@ export function HeightInput({
       
       {unit === 'inches' ? (
         <View style={styles.feetInchesRow}>
-          <View style={styles.feetInput}>
-            <Text style={styles.inputLabel}>Feet</Text>
-            <TextInput
-              style={styles.input}
-              value={feet}
-              onChangeText={(text) => handleFeetInchesChange(text, inches)}
-              placeholder="5"
-              keyboardType="numeric"
-            />
-          </View>
-          <View style={styles.inchesInput}>
-            <Text style={styles.inputLabel}>Inches</Text>
-            <TextInput
-              style={styles.input}
-              value={inches}
-              onChangeText={(text) => handleFeetInchesChange(feet, text)}
-              placeholder="8"
-              keyboardType="numeric"
-            />
-          </View>
+          <InputWithSuffix
+            value={feet}
+            onChangeText={(text) => handleFeetInchesChange(text, inches)}
+            placeholder="5"
+            suffix="ft"
+            style={styles.feetInput}
+          />
+          <InputWithSuffix
+            value={inches}
+            onChangeText={(text) => handleFeetInchesChange(feet, text)}
+            placeholder="8"
+            suffix="in"
+            style={styles.inchesInput}
+          />
         </View>
       ) : (
-        <TextInput
-          style={styles.input}
+        <InputWithSuffix
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          keyboardType="numeric"
+          suffix="cm"
         />
       )}
     </View>
@@ -119,11 +133,25 @@ const styles = StyleSheet.create({
   inchesInput: {
     flex: 1,
   },
-  inputLabel: {
-    fontSize: typography.sizes.xs,
-    fontWeight: typography.weights.medium,
-    color: colors.neutral[500],
-    marginBottom: spacing.xs,
+  inputContainer: {
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.neutral[200],
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+  },
+  inputWithSuffix: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    fontSize: typography.sizes.md,
+    color: colors.neutral[800],
+  },
+  suffix: {
+    fontSize: typography.sizes.md,
+    color: colors.neutral[400],
+    marginLeft: spacing.xs,
   },
   input: {
     backgroundColor: colors.white,

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { FormInput } from './FormInput';
+import { TextInput } from 'react-native';
 import { UnitToggle } from './UnitToggle';
 import { colors, spacing, typography } from '@/theme/colors';
 
@@ -13,6 +13,27 @@ interface AgeInputsProps {
   ageUnit: 'years-months' | 'weeks';
   onAgeUnitChange: (unit: 'years-months' | 'weeks') => void;
 }
+
+const InputWithSuffix = ({ value, onChangeText, placeholder, suffix, required = false }: {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+  suffix: string;
+  required?: boolean;
+}) => {
+  return (
+    <View style={styles.inputContainer}>
+      <TextInput
+        style={styles.inputWithSuffix}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        keyboardType="numeric"
+      />
+      <Text style={styles.suffix}>{suffix}</Text>
+    </View>
+  );
+};
 
 export function AgeInputs({ 
   years, 
@@ -38,33 +59,26 @@ export function AgeInputs({
       
       {ageUnit === 'years-months' ? (
         <View style={styles.ageRow}>
-          <View style={styles.ageInput}>
-            <FormInput
-              label="Years"
-              value={years}
-              onChangeText={onYearsChange}
-              placeholder="e.g., 8"
-              keyboardType="numeric"
-              required
-            />
-          </View>
-          <View style={styles.ageInput}>
-            <FormInput
-              label="Months"
-              value={months}
-              onChangeText={onMonthsChange}
-              placeholder="e.g., 6"
-              keyboardType="numeric"
-            />
-          </View>
+          <InputWithSuffix
+            value={years}
+            onChangeText={onYearsChange}
+            placeholder="8"
+            suffix="years"
+            required
+          />
+          <InputWithSuffix
+            value={months}
+            onChangeText={onMonthsChange}
+            placeholder="6"
+            suffix="months"
+          />
         </View>
       ) : (
-        <FormInput
-          label="Weeks"
+        <InputWithSuffix
           value={weeks}
           onChangeText={onWeeksChange}
-          placeholder="e.g., 416"
-          keyboardType="numeric"
+          placeholder="416"
+          suffix="weeks"
           required
         />
       )}
@@ -91,7 +105,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
   },
-  ageInput: {
+  inputContainer: {
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.neutral[200],
+    borderRadius: borderRadius.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
     flex: 1,
+  },
+  inputWithSuffix: {
+    flex: 1,
+    paddingVertical: spacing.md,
+    fontSize: typography.sizes.md,
+    color: colors.neutral[800],
+  },
+  suffix: {
+    fontSize: typography.sizes.md,
+    color: colors.neutral[400],
+    marginLeft: spacing.xs,
   },
 });
