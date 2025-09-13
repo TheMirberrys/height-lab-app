@@ -91,7 +91,6 @@ export function HeightInput({
         <InputWithSuffix
           value={value}
           onChangeText={onChangeText}
-          placeholder={placeholder}
           suffix="cm"
         />
       )}
