@@ -53,6 +53,27 @@ export function HeightInput({
     onChangeText(totalInches.toString());
   };
 
+  // Convert between cm and inches
+  const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
+    if (!value || fromUnit === toUnit) return value;
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return '';
+    
+    if (fromUnit === 'cm' && toUnit === 'inches') {
+      return (numValue / 2.54).toString();
+    } else if (fromUnit === 'inches' && toUnit === 'cm') {
+      return (numValue * 2.54).toString();
+    }
+    return value;
+  };
+
+  // Handle unit change with conversion
+  const handleUnitChange = (newUnit: 'cm' | 'inches') => {
+    const convertedValue = convertHeight(value, unit, newUnit);
+    onChangeText(convertedValue);
+    onUnitChange(newUnit);
+  };
+
   const { feet, inches } = unit === 'inches' ? getFeetAndInches(value) : { feet: '', inches: '' };
 
   return (
@@ -64,7 +85,7 @@ export function HeightInput({
         <UnitToggle
           options={['cm', 'inches']}
           selectedOption={unit}
-          onOptionChange={(option) => onUnitChange(option as 'cm' | 'inches')}
+          onOptionChange={(option) => handleUnitChange(option as 'cm' | 'inches')}
           inline
         />
       </View>
