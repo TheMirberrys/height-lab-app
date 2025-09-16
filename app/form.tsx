@@ -82,6 +82,11 @@ export default function FormPage() {
     >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
+      <ScrollView style={styles.scrollContainer}>
+        {/* Child Details */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeaderWithToggle}>
+            <View style={styles.sectionHeader}>
       {/* Global Height Unit Toggle */}
       <View style={styles.globalToggleContainer}>
         <UnitToggle
@@ -140,6 +145,7 @@ export default function FormPage() {
             unit={heightUnit}
             showUnitToggle={false}
           />
+        </View>
         </View>
 
         {/* Parent Information */}
