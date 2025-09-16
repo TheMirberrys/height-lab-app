@@ -59,7 +59,6 @@ export function AgeInputs({
           onOptionChange={(option) => onAgeUnitChange(option === 'Years & Months' ? 'years-months' : 'weeks')}
           inline
         />
-      )}
       </View>
       
       {ageUnit === 'years-months' ? (
