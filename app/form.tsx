@@ -1,4 +1,5 @@
 import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { User, Ruler } from 'lucide-react-native';
@@ -10,7 +11,7 @@ import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
-import { colors, spacing } from '@/theme/colors';
+import { colors, spacing, typography } from '@/theme/colors';
 
 export default function FormPage() {
   const router = useRouter();
