@@ -9,7 +9,8 @@ interface HeightInputProps {
   required?: boolean;
   helpText?: string;
   unit: 'cm' | 'inches';
-  onUnitChange: (unit: 'cm' | 'inches') => void;
+  onUnitChange?: (unit: 'cm' | 'inches') => void;
+  showUnitToggle?: boolean;
 }
 
 const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
@@ -45,7 +46,8 @@ export function HeightInput({
   required = false, 
   helpText,
   unit,
-  onUnitChange
+  onUnitChange,
+  showUnitToggle = true
 }: HeightInputProps) {
   // For inches, split the value into feet and inches
   const getFeetAndInches = (totalInches: string) => {
@@ -89,12 +91,14 @@ export function HeightInput({
         <Text style={styles.label}>
           {label} {required && '*'}
         </Text>
-        <UnitToggle
-          options={['cm', 'inches']}
-          selectedOption={unit}
-          onOptionChange={(option) => handleUnitChange(option as 'cm' | 'inches')}
-          inline
-        />
+        {showUnitToggle && onUnitChange && (
+          <UnitToggle
+            options={['cm', 'inches']}
+            selectedOption={unit}
+            onOptionChange={(option) => handleUnitChange(option as 'cm' | 'inches')}
+            inline
+          />
+        )}
       </View>
       {helpText && <Text style={styles.helpText}>{helpText}</Text>}
       

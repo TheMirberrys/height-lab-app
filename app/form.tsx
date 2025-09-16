@@ -9,6 +9,7 @@ import { HeightInput } from '@/components/form/HeightInput';
 import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
+import { UnitToggle } from '@/components/form/UnitToggle';
 import { colors, spacing } from '@/theme/colors';
 
 export default function FormPage() {
@@ -25,14 +26,39 @@ export default function FormPage() {
     fatherHeight: '',
   });
 
-  const [heightUnits, setHeightUnits] = useState({
-    childHeight: 'cm',
-    heightAt2: 'cm',
-    motherHeight: 'cm',
-    fatherHeight: 'cm',
-  });
+  const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
 
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
+
+  // Convert height values when unit changes
+  const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
+    if (!value || fromUnit === toUnit) return value;
+    const numValue = parseInt(value);
+    if (isNaN(numValue)) return '';
+    
+    if (fromUnit === 'cm' && toUnit === 'inches') {
+      return Math.round(numValue / 2.54).toString();
+    } else if (fromUnit === 'inches' && toUnit === 'cm') {
+      return Math.round(numValue * 2.54).toString();
+    }
+    return value;
+  };
+
+  const handleHeightUnitChange = (newUnit: 'cm' | 'inches') => {
+    const oldUnit = heightUnit;
+    
+    // Convert all height values
+    setFormData(prev => ({
+      ...prev,
+      childHeight: convertHeight(prev.childHeight, oldUnit, newUnit),
+      heightAt2: convertHeight(prev.heightAt2, oldUnit, newUnit),
+      motherHeight: convertHeight(prev.motherHeight, oldUnit, newUnit),
+      fatherHeight: convertHeight(prev.fatherHeight, oldUnit, newUnit),
+    }));
+    
+    setHeightUnit(newUnit);
+  };
+
   const handleSubmit = () => {
     // Validate required fields
     if (!formData.childHeight || !formData.childAgeYears || !formData.childGender || !formData.motherHeight || !formData.fatherHeight) {
@@ -55,6 +81,16 @@ export default function FormPage() {
     >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
+      {/* Global Height Unit Toggle */}
+      <View style={styles.globalToggleContainer}>
+        <UnitToggle
+          options={['cm', 'inches']}
+          selectedOption={heightUnit}
+          onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
+          inline
+        />
+      </View>
+
       <ScrollView 
         style={styles.content} 
         showsVerticalScrollIndicator={false}
@@ -76,8 +112,8 @@ export default function FormPage() {
             value={formData.childHeight}
             onChangeText={(text) => setFormData({...formData, childHeight: text})}
             keyboardType="numeric"
-            unit={heightUnits.childHeight}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, childHeight: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
 
           <AgeInputs
@@ -97,8 +133,8 @@ export default function FormPage() {
             onChangeText={(text) => setFormData({...formData, heightAt2: text})}
             keyboardType="numeric"
             helpText="Optional - improves accuracy if known"
-            unit={heightUnits.heightAt2}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, heightAt2: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
         </FormSection>
 
@@ -112,8 +148,8 @@ export default function FormPage() {
             value={formData.motherHeight}
             onChangeText={(text) => setFormData({...formData, motherHeight: text})}
             keyboardType="numeric"
-            unit={heightUnits.motherHeight}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, motherHeight: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
 
           <HeightInput
@@ -121,8 +157,8 @@ export default function FormPage() {
             value={formData.fatherHeight}
             onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
             keyboardType="numeric"
-            unit={heightUnits.fatherHeight}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, fatherHeight: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
         </FormSection>
 
@@ -142,6 +178,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.neutral[50],
+  },
+  globalToggleContainer: {
+    backgroundColor: colors.white,
+    paddingHorizontal: spacing.xxl,
+    paddingVertical: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.neutral[100],
+    alignItems: 'flex-end',
   },
   content: {
     flex: 1,
