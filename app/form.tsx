@@ -91,17 +91,20 @@ export default function FormPage() {
         />
       </View>
 
-      <ScrollView 
-        style={styles.content} 
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {/* Child Information */}
-        <FormSection 
-          title="Child Details" 
-          icon={<User size={20} color={colors.primary[500]} />}
-        >
+              <User size={20} color={colors.primary[500]} />
+              <Text style={styles.sectionTitle}>Child Details</Text>
+            </View>
+            <View style={styles.unitsToggleContainer}>
+              <Text style={styles.unitsLabel}>Units</Text>
+              <UnitToggle
+                options={['cm', 'inches']}
+                selectedOption={heightUnit}
+                onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
+                inline
+              />
+            </View>
+          </View>
+
           <GenderSelector
             value={formData.childGender}
             onValueChange={(gender) => setFormData({...formData, childGender: gender})}
@@ -136,7 +139,7 @@ export default function FormPage() {
             unit={heightUnit}
             showUnitToggle={false}
           />
-        </FormSection>
+        </View>
 
         {/* Parent Information */}
         <FormSection 
@@ -193,6 +196,35 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: spacing.xxl,
     flexGrow: 1,
+  },
+  section: {
+    marginBottom: spacing.xxxl,
+  },
+  sectionHeaderWithToggle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.semibold,
+    color: colors.neutral[800],
+    marginLeft: spacing.sm,
+  },
+  unitsToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  unitsLabel: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
+    color: colors.neutral[600],
+    marginRight: spacing.md,
   },
   bottomSpacer: {
     height: 100, // Extra space to ensure button is accessible above mobile navigation
