@@ -137,12 +137,6 @@ export default function FormPage() {
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {showErrorMessage && (
-          <View style={styles.errorMessage}>
-            <Text style={styles.errorText}>Please fill in all required fields</Text>
-          </View>
-        )}
-
         {/* Child Details Section */}
         <FormSection
           title="Child Details"
