@@ -160,18 +160,11 @@ export default function FormPage() {
         <FormSection
           title="Child Details"
           icon={<User size={20} color={colors.primary[500]} />}
-          headerRight={
-            <View style={styles.unitsToggleContainer}>
-              <Text style={styles.unitsLabel}>Height Units</Text>
-              <UnitToggle
-                options={['cm', 'inches']}
-                selectedOption={heightUnit}
-                onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
-                inline
-                accessibilityLabel={`Select height unit, currently ${heightUnit}`}
-              />
-            </View>
-          }
+          showUnitsToggle
+          unitsLabel="Height Units"
+          unitsOptions={['cm', 'inches']}
+          selectedUnit={heightUnit}
+          onUnitChange={(unit) => handleHeightUnitChange(unit as 'cm' | 'inches')}
         >
           <GenderSelector
             value={formData.childGender}
@@ -233,8 +226,6 @@ export default function FormPage() {
           accessibilityLabel="Calculate height prediction"
           testID="calculate-button"
         />
-
-        <View style={styles.bottomSpacer} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -248,18 +239,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: spacing.xxl,
     flexGrow: 1,
-  },
-  unitsToggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  unitsLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.medium,
-    color: colors.neutral[600],
-    marginRight: spacing.md,
-  },
-  bottomSpacer: {
-    height: 100,
+    paddingBottom: 100,
   },
 });
