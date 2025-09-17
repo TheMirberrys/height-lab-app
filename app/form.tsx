@@ -48,6 +48,25 @@ export default function FormPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
 
+  // Validation helpers
+  const validateHeights = (fields: (keyof FormData)[]) => {
+    for (const field of fields) {
+      const value = formData[field];
+      if (!value || isNaN(Number(value))) {
+        return `${field.replace(/([A-Z])/g, ' $1').toLowerCase()} is invalid`;
+      }
+    }
+    return null;
+  };
+
+  const validateHeightRange = (height: string, fieldName: string) => {
+    const heightNum = Number(height);
+    if (heightNum < 20 || heightNum > 250) {
+      return `${fieldName} is out of realistic range (20-250 ${heightUnit})`;
+    }
+    return null;
+  };
+
   // Generic setter to reduce repetition
   const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -80,10 +99,8 @@ export default function FormPage() {
     [heightUnit],
   );
 
-  // helper for numeric validation
-  const isNumeric = (v: string) => v !== '' && !isNaN(Number(v));
-
   const handleSubmit = useCallback(() => {
+    // Check required fields
     if (
       !formData.childHeight ||
       !formData.childAgeYears ||
@@ -95,14 +112,17 @@ export default function FormPage() {
       return;
     }
 
-    if (!isNumeric(formData.childHeight) || !isNumeric(formData.motherHeight) || !isNumeric(formData.fatherHeight)) {
-      Alert.alert('Invalid input', 'Please enter numeric values for heights.');
+    // Validate numeric fields
+    const heightValidationError = validateHeights(['childHeight', 'motherHeight', 'fatherHeight']);
+    if (heightValidationError) {
+      Alert.alert('Invalid Input', heightValidationError);
       return;
     }
 
-    const childHeightNum = Number(formData.childHeight);
-    if (childHeightNum < 20 || childHeightNum > 250) {
-      Alert.alert('Height out of range', 'Please enter a realistic child height.');
+    // Validate height ranges
+    const rangeValidationError = validateHeightRange(formData.childHeight, 'Child height');
+    if (rangeValidationError) {
+      Alert.alert('Height Out of Range', rangeValidationError);
       return;
     }
 
