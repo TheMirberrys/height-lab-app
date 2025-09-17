@@ -127,6 +127,9 @@ export function AgeInputs({
           hasError={hasError}
         />
       )}
+      {hasError && (
+        <Text style={styles.errorText}>Please answer this question</Text>
+      )}
     </View>
   );
 }
@@ -177,5 +180,11 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.neutral[400],
     marginLeft: spacing.xs,
+  },
+  errorText: {
+    fontSize: typography.sizes.xs,
+    color: '#DC2626',
+    marginTop: spacing.sm,
+    fontWeight: typography.weights.medium,
   },
 });

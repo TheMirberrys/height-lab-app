@@ -87,4 +87,10 @@ const styles = StyleSheet.create({
   genderButtonTextActive: {
     color: colors.white,
   },
+  errorText: {
+    fontSize: typography.sizes.xs,
+    color: '#DC2626',
+    marginTop: spacing.sm,
+    fontWeight: typography.weights.medium,
+  },
 });

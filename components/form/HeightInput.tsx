@@ -92,6 +92,9 @@ export function HeightInput({
         )}
       </View>
       {helpText && <Text style={styles.helpText}>{helpText}</Text>}
+      {hasError && (
+        <Text style={styles.errorText}>Please answer this question</Text>
+      )}
       
       {unit === 'inches' ? (
         <View style={styles.feetInchesRow}>
@@ -145,6 +148,12 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.xs,
     color: colors.neutral[500],
     marginBottom: spacing.sm,
+  },
+  errorText: {
+    fontSize: typography.sizes.xs,
+    color: '#DC2626',
+    marginBottom: spacing.sm,
+    fontWeight: typography.weights.medium,
   },
   feetInchesRow: {
     flexDirection: 'row',

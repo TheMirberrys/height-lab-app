@@ -55,7 +55,6 @@ export default function FormPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   // Check if we should show the height at age 2 field
   const shouldShowHeightAt2 = isAgeGreaterThan2Years6Months(formData.childAge, ageUnit);
@@ -66,9 +65,6 @@ export default function FormPage() {
     // Clear validation error when user starts typing
     if (validationErrors[field]) {
       setValidationErrors(prev => ({ ...prev, [field]: false }));
-    }
-    if (showErrorMessage) {
-      setShowErrorMessage(false);
     }
   }, []);
 
@@ -240,19 +236,5 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
     flexGrow: 1,
     paddingBottom: 100,
-  },
-  errorMessage: {
-    backgroundColor: '#FEE2E2',
-    borderWidth: 1,
-    borderColor: '#FECACA',
-    borderRadius: 8,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  errorText: {
-    color: '#DC2626',
-    fontSize: typography.sizes.base,
-    fontWeight: typography.weights.medium,
-    textAlign: 'center',
   },
 });
