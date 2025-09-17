@@ -4,13 +4,16 @@ import { UnitToggle } from './UnitToggle';
 import { colors, spacing, borderRadius } from '@/theme/colors';
 import { typography } from '@/theme/typography';
 
+import { 
+  convertYearsMonthsToWeeks, 
+  convertWeeksToYearsMonths, 
+  parseAgeValue, 
+  formatAgeValue 
+} from '@/utils/ageUtils';
+
 interface AgeInputsProps {
-  years: string;
-  months: string;
-  weeks: string;
-  onYearsChange: (text: string) => void;
-  onMonthsChange: (text: string) => void;
-  onWeeksChange: (text: string) => void;
+  value: string; // Unified age value
+  onValueChange: (value: string) => void;
   ageUnit: 'years-months' | 'weeks';
   onAgeUnitChange: (unit: 'years-months' | 'weeks') => void;
 }
@@ -40,16 +43,50 @@ const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
   );
 };
 
-export function AgeInputs({ 
-  years, 
-  months, 
-  weeks,
-  onYearsChange, 
-  onMonthsChange,
-  onWeeksChange,
+export function AgeInputs({
+  value,
+  onValueChange,
   ageUnit,
   onAgeUnitChange
 }: AgeInputsProps) {
+  // Parse current value based on unit
+  const currentAge = parseAgeValue(value, ageUnit);
+  const { years, months, weeks } = currentAge;
+
+  // Handle unit change with conversion
+  const handleUnitChange = (newUnit: 'years-months' | 'weeks') => {
+    if (newUnit === ageUnit) return;
+
+    let convertedValue = '';
+    if (newUnit === 'weeks' && (years > 0 || months > 0)) {
+      const convertedWeeks = convertYearsMonthsToWeeks(years, months);
+      convertedValue = convertedWeeks.toString();
+    } else if (newUnit === 'years-months' && weeks > 0) {
+      const converted = convertWeeksToYearsMonths(weeks);
+      convertedValue = formatAgeValue(converted.years, converted.months, 0, 'years-months');
+    }
+
+    onValueChange(convertedValue);
+    onAgeUnitChange(newUnit);
+  };
+
+  // Handle individual field changes
+  const handleYearsChange = (newYears: string) => {
+    const yearsNum = parseInt(newYears) || 0;
+    const newValue = formatAgeValue(yearsNum, months, 0, 'years-months');
+    onValueChange(newValue);
+  };
+
+  const handleMonthsChange = (newMonths: string) => {
+    const monthsNum = parseInt(newMonths) || 0;
+    const newValue = formatAgeValue(years, monthsNum, 0, 'years-months');
+    onValueChange(newValue);
+  };
+
+  const handleWeeksChange = (newWeeks: string) => {
+    onValueChange(newWeeks);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
@@ -57,7 +94,7 @@ export function AgeInputs({
         <UnitToggle
           options={['Years & Months', 'Weeks']}
           selectedOption={ageUnit === 'years-months' ? 'Years & Months' : 'Weeks'}
-          onOptionChange={(option) => onAgeUnitChange(option === 'Years & Months' ? 'years-months' : 'weeks')}
+          onOptionChange={(option) => handleUnitChange(option === 'Years & Months' ? 'years-months' : 'weeks')}
           inline
         />
       </View>
@@ -65,21 +102,21 @@ export function AgeInputs({
       {ageUnit === 'years-months' ? (
         <View style={styles.ageRow}>
           <InputWithSuffix
-            value={years}
-            onChangeText={onYearsChange}
+            value={years > 0 ? years.toString() : ''}
+            onChangeText={handleYearsChange}
             suffix="years"
             required
           />
           <InputWithSuffix
-            value={months}
-            onChangeText={onMonthsChange}
+            value={months > 0 ? months.toString() : ''}
+            onChangeText={handleMonthsChange}
             suffix="months"
           />
         </View>
       ) : (
         <InputWithSuffix
-          value={weeks}
-          onChangeText={onWeeksChange}
+          value={weeks > 0 ? weeks.toString() : ''}
+          onChangeText={handleWeeksChange}
           suffix="weeks"
           required
         />

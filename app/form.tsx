@@ -19,12 +19,12 @@ import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
 import { colors, spacing } from '@/theme/colors';
 import { typography } from '@/theme/typography';
+import { convertHeight, validateHeights, validateHeightRange } from '@/utils/heightUtils';
+import { getAgeInYears } from '@/utils/ageUtils';
 
 type FormData = {
   childHeight: string;
-  childAgeYears: string;
-  childAgeMonths: string;
-  childAgeWeeks: string;
+  childAge: string; // Unified age field
   childGender: string;
   heightAt2: string;
   motherHeight: string;
@@ -36,9 +36,7 @@ export default function FormPage() {
 
   const [formData, setFormData] = useState<FormData>({
     childHeight: '',
-    childAgeYears: '',
-    childAgeMonths: '',
-    childAgeWeeks: '',
+    childAge: '',
     childGender: '',
     heightAt2: '',
     motherHeight: '',
@@ -48,18 +46,10 @@ export default function FormPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
 
-  // Convert height values when unit changes
-  const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
-    if (!value || fromUnit === toUnit) return value;
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return '';
-    if (fromUnit === 'cm' && toUnit === 'inches') {
-      return (numValue / 2.54).toFixed(1).replace(/\.0$/, '');
-    } else if (fromUnit === 'inches' && toUnit === 'cm') {
-      return (numValue * 2.54).toFixed(1).replace(/\.0$/, '');
-    }
-    return value;
-  };
+  // Generic setter to reduce repetition
+  const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
 
   const handleHeightUnitChange = useCallback(
     (newUnit: 'cm' | 'inches') => {
@@ -76,13 +66,11 @@ export default function FormPage() {
     [heightUnit],
   );
 
-  // helper for numeric validation
-  const isNumeric = (v: string) => v !== '' && !isNaN(Number(v));
-
   const handleSubmit = useCallback(() => {
+    // Check required fields
     if (
       !formData.childHeight ||
-      !formData.childAgeYears ||
+      !formData.childAge ||
       !formData.childGender ||
       !formData.motherHeight ||
       !formData.fatherHeight
@@ -91,20 +79,26 @@ export default function FormPage() {
       return;
     }
 
-    if (!isNumeric(formData.childHeight) || !isNumeric(formData.motherHeight) || !isNumeric(formData.fatherHeight)) {
-      Alert.alert('Invalid input', 'Please enter numeric values for heights.');
+    // Validate numeric fields
+    const heightValidationError = validateHeights(formData, ['childHeight', 'motherHeight', 'fatherHeight']);
+    if (heightValidationError) {
+      Alert.alert('Invalid Input', heightValidationError);
       return;
     }
 
-    const childHeightNum = Number(formData.childHeight);
-    if (childHeightNum < 20 || childHeightNum > 250) {
-      Alert.alert('Height out of range', 'Please enter a realistic child height.');
+    // Validate height ranges
+    const rangeValidationError = validateHeightRange(formData.childHeight, 'Child height', heightUnit);
+    if (rangeValidationError) {
+      Alert.alert('Height Out of Range', rangeValidationError);
       return;
     }
 
     router.push({
       pathname: '/results',
-      params: formData,
+      params: {
+        ...formData,
+        childAgeYears: getAgeInYears(formData.childAge, ageUnit).toString(), // Convert for results page
+      },
     });
   }, [formData, router]);
 
@@ -121,42 +115,29 @@ export default function FormPage() {
         <FormSection
           title="Child Details"
           icon={<User size={20} color={colors.primary[500]} />}
-          headerRight={
-            <View style={styles.unitsToggleContainer}>
-              <Text style={styles.unitsLabel}>Height Units</Text>
-              <UnitToggle
-                options={['cm', 'inches']}
-                selectedOption={heightUnit}
-                onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
-                inline
-                accessibilityLabel={`Select height unit, currently ${heightUnit}`}
-              />
-            </View>
-          }
+          showUnitsToggle
+          unitsLabel="Height Units"
+          unitsOptions={['cm', 'inches']}
+          selectedUnit={heightUnit}
+          onUnitChange={(unit) => handleHeightUnitChange(unit as 'cm' | 'inches')}
         >
           <GenderSelector
             value={formData.childGender}
-            onValueChange={(gender) =>
-              setFormData((prev) => ({ ...prev, childGender: gender }))
-            }
+            onValueChange={updateFormData('childGender')}
           />
 
           <HeightInput
             label="Current Height"
             value={formData.childHeight}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, childHeight: text }))}
+            onChangeText={updateFormData('childHeight')}
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
           />
 
           <AgeInputs
-            years={formData.childAgeYears}
-            months={formData.childAgeMonths}
-            weeks={formData.childAgeWeeks}
-            onYearsChange={(text) => setFormData((prev) => ({ ...prev, childAgeYears: text }))}
-            onMonthsChange={(text) => setFormData((prev) => ({ ...prev, childAgeMonths: text }))}
-            onWeeksChange={(text) => setFormData((prev) => ({ ...prev, childAgeWeeks: text }))}
+            value={formData.childAge}
+            onValueChange={updateFormData('childAge')}
             ageUnit={ageUnit}
             onAgeUnitChange={setAgeUnit}
           />
@@ -164,7 +145,7 @@ export default function FormPage() {
           <HeightInput
             label="Height at Age 2 (optional)"
             value={formData.heightAt2}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, heightAt2: text }))}
+            onChangeText={updateFormData('heightAt2')}
             keyboardType="numeric"
             helpText="Improves accuracy if known"
             unit={heightUnit}
@@ -177,7 +158,7 @@ export default function FormPage() {
           <HeightInput
             label="Mother's Height"
             value={formData.motherHeight}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, motherHeight: text }))}
+            onChangeText={updateFormData('motherHeight')}
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
@@ -186,7 +167,7 @@ export default function FormPage() {
           <HeightInput
             label="Father's Height"
             value={formData.fatherHeight}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, fatherHeight: text }))}
+            onChangeText={updateFormData('fatherHeight')}
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
@@ -200,8 +181,6 @@ export default function FormPage() {
           accessibilityLabel="Calculate height prediction"
           testID="calculate-button"
         />
-
-        <View style={styles.bottomSpacer} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -215,18 +194,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: spacing.xxl,
     flexGrow: 1,
-  },
-  unitsToggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  unitsLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.medium,
-    color: colors.neutral[600],
-    marginRight: spacing.md,
-  },
-  bottomSpacer: {
-    height: 100,
+    paddingBottom: 100,
   },
 });
