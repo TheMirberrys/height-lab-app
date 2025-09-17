@@ -142,7 +142,6 @@ export default function FormPage() {
           title="Child Details"
           icon={<User size={20} color={colors.primary[500]} />}
           showUnitsToggle
-          unitsLabel="Height Units"
           unitsOptions={['cm', 'inches']}
           selectedUnit={heightUnit}
           onUnitChange={(unit) => handleHeightUnitChange(unit as 'cm' | 'inches')}
