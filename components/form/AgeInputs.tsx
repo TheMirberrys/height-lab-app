@@ -16,6 +16,7 @@ interface AgeInputsProps {
   onValueChange: (value: string) => void;
   ageUnit: 'years-months' | 'weeks';
   onAgeUnitChange: (unit: 'years-months' | 'weeks') => void;
+  error?: string;
 }
 
 const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
@@ -48,6 +49,7 @@ export function AgeInputs({
   onValueChange,
   ageUnit,
   onAgeUnitChange
+  error
 }: AgeInputsProps) {
   // Parse current value based on unit
   const currentAge = parseAgeValue(value, ageUnit);
@@ -121,6 +123,8 @@ export function AgeInputs({
           required
         />
       )}
+      
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
@@ -164,5 +168,10 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.neutral[400],
     marginLeft: spacing.xs,
+  },
+  errorText: {
+    color: colors.warning[700],
+    fontSize: typography.sizes.xs,
+    marginTop: spacing.xs,
   },
 });

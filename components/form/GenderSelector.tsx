@@ -5,9 +5,10 @@ import { typography } from '@/theme/typography';
 interface GenderSelectorProps {
   value: string;
   onValueChange: (gender: string) => void;
+  error?: string;
 }
 
-export function GenderSelector({ value, onValueChange }: GenderSelectorProps) {
+export function GenderSelector({ value, onValueChange, error }: GenderSelectorProps) {
   return (
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Gender</Text>
@@ -29,6 +30,8 @@ export function GenderSelector({ value, onValueChange }: GenderSelectorProps) {
           </Text>
         </TouchableOpacity>
       </View>
+      
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
@@ -67,5 +70,10 @@ const styles = StyleSheet.create({
   },
   genderButtonTextActive: {
     color: colors.white,
+  },
+  errorText: {
+    color: colors.warning[700],
+    fontSize: typography.sizes.xs,
+    marginTop: spacing.xs,
   },
 });

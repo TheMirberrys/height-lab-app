@@ -22,6 +22,15 @@ import { typography } from '@/theme/typography';
 import { convertHeight, validateHeights, validateHeightRange } from '@/utils/heightUtils';
 import { getAgeInYears } from '@/utils/ageUtils';
 
+interface FormErrors {
+  general?: string;
+  childHeight?: string;
+  childAge?: string;
+  childGender?: string;
+  motherHeight?: string;
+  fatherHeight?: string;
+}
+
 // Helper function to check if child is older than 2.5 years
 const shouldShowHeightAt2 = (ageValue: string, ageUnit: 'years-months' | 'weeks'): boolean => {
   const ageInYears = getAgeInYears(ageValue, ageUnit);
@@ -51,6 +60,7 @@ export default function FormPage() {
 
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
+  const [errors, setErrors] = useState<FormErrors>({});
 
   // Check if we should show the "Height at Age 2" field
   const showHeightAt2Field = shouldShowHeightAt2(formData.childAge, ageUnit);
@@ -58,6 +68,10 @@ export default function FormPage() {
   // Generic setter to reduce repetition
   const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
   }, []);
 
   const handleHeightUnitChange = useCallback(
@@ -76,6 +90,8 @@ export default function FormPage() {
   );
 
   const handleSubmit = useCallback(() => {
+    const newErrors: FormErrors = {};
+
     // Check required fields
     if (
       !formData.childHeight ||
@@ -84,24 +100,43 @@ export default function FormPage() {
       !formData.motherHeight ||
       !formData.fatherHeight
     ) {
-      Alert.alert('Missing Information', 'Please fill in all required fields marked with *');
-      return;
+      newErrors.general = 'Please fill in all required fields marked with *';
     }
 
     // Validate numeric fields
     const heightValidationError = validateHeights(formData, ['childHeight', 'motherHeight', 'fatherHeight']);
     if (heightValidationError) {
-      Alert.alert('Invalid Input', heightValidationError);
-      return;
+      // Parse which field has the error and assign it
+      if (heightValidationError.includes('child height')) {
+        newErrors.childHeight = 'Please enter a valid height';
+      }
+      if (heightValidationError.includes('mother height')) {
+        newErrors.motherHeight = 'Please enter a valid height';
+      }
+      if (heightValidationError.includes('father height')) {
+        newErrors.fatherHeight = 'Please enter a valid height';
+      }
     }
 
     // Validate height ranges
     const rangeValidationError = validateHeightRange(formData.childHeight, 'Child height', heightUnit);
     if (rangeValidationError) {
-      Alert.alert('Height Out of Range', rangeValidationError);
+      newErrors.childHeight = `Height must be between 20-250 ${heightUnit}`;
+    }
+
+    // Validate age
+    if (formData.childAge && getAgeInYears(formData.childAge, ageUnit) <= 0) {
+      newErrors.childAge = 'Please enter a valid age';
+    }
+
+    // If there are errors, set them and return
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
 
+    // Clear errors and proceed
+    setErrors({});
     router.push({
       pathname: '/results',
       params: {
@@ -109,7 +144,7 @@ export default function FormPage() {
         childAgeYears: getAgeInYears(formData.childAge, ageUnit).toString(), // Convert for results page
       },
     });
-  }, [formData, router]);
+  }, [formData, router, heightUnit, ageUnit, errors]);
 
   return (
     <KeyboardAvoidingView
@@ -120,6 +155,13 @@ export default function FormPage() {
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* General Error Message */}
+        {errors.general && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{errors.general}</Text>
+          </View>
+        )}
+
         {/* Child Details Section */}
         <FormSection
           title="Child Details"
@@ -133,6 +175,7 @@ export default function FormPage() {
           <GenderSelector
             value={formData.childGender}
             onValueChange={updateFormData('childGender')}
+            error={errors.childGender}
           />
 
           <HeightInput
@@ -142,6 +185,7 @@ export default function FormPage() {
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
+            error={errors.childHeight}
           />
 
           <AgeInputs
@@ -149,6 +193,7 @@ export default function FormPage() {
             onValueChange={updateFormData('childAge')}
             ageUnit={ageUnit}
             onAgeUnitChange={setAgeUnit}
+            error={errors.childAge}
           />
 
           {showHeightAt2Field && (
@@ -173,6 +218,7 @@ export default function FormPage() {
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
+            error={errors.motherHeight}
           />
 
           <HeightInput
@@ -182,6 +228,7 @@ export default function FormPage() {
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
+            error={errors.fatherHeight}
           />
         </FormSection>
 
@@ -206,5 +253,18 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
     flexGrow: 1,
     paddingBottom: 100,
+  },
+  errorContainer: {
+    backgroundColor: colors.warning[50],
+    borderWidth: 1,
+    borderColor: colors.warning[200],
+    borderRadius: borderRadius.sm,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  errorText: {
+    color: colors.warning[700],
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
   },
 });

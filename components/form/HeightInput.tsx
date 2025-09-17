@@ -13,6 +13,7 @@ interface HeightInputProps {
   unit: 'cm' | 'inches';
   onUnitChange?: (unit: 'cm' | 'inches') => void;
   showUnitToggle?: boolean;
+  error?: string;
 }
 
 const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
@@ -50,6 +51,7 @@ export function HeightInput({
   unit,
   onUnitChange,
   showUnitToggle = true
+  error
 }: HeightInputProps) {
   // For inches, split the value into feet and inches
   const getFeetAndInches = (totalInches: string) => {
@@ -113,6 +115,8 @@ export function HeightInput({
           suffix="cm"
         />
       )}
+      
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
 }
@@ -176,5 +180,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     fontSize: typography.sizes.md,
     color: colors.neutral[800],
+  },
+  errorText: {
+    color: colors.warning[700],
+    fontSize: typography.sizes.xs,
+    marginTop: spacing.xs,
   },
 });
