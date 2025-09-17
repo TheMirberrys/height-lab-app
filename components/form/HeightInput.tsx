@@ -13,13 +13,15 @@ interface HeightInputProps {
   unit: 'cm' | 'inches';
   onUnitChange?: (unit: 'cm' | 'inches') => void;
   showUnitToggle?: boolean;
+  hasError?: boolean;
 }
 
-const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
+const InputWithSuffix = ({ value, onChangeText, suffix, style, hasError }: {
   value: string;
   onChangeText: (text: string) => void;
   suffix: string;
   style?: any;
+  hasError?: boolean;
 }) => {
   const handleTextChange = (text: string) => {
     // Only allow positive integers (no decimals, no negative numbers)
@@ -28,7 +30,7 @@ const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
   };
 
   return (
-    <View style={[styles.inputContainer, style]}>
+    <View style={[styles.inputContainer, style, hasError && styles.inputContainerError]}>
       <TextInput
         style={styles.inputWithSuffix}
         value={value}
@@ -49,7 +51,8 @@ export function HeightInput({
   helpText,
   unit,
   onUnitChange,
-  showUnitToggle = true
+  showUnitToggle = true,
+  hasError = false
 }: HeightInputProps) {
   // For inches, split the value into feet and inches
   const getFeetAndInches = (totalInches: string) => {
@@ -98,12 +101,14 @@ export function HeightInput({
             onChangeText={(text) => handleFeetInchesChange(text, inches)}
             suffix="ft"
             style={styles.feetInput}
+            hasError={hasError}
           />
           <InputWithSuffix
             value={inches}
             onChangeText={(text) => handleFeetInchesChange(feet, text)}
             suffix="in"
             style={styles.inchesInput}
+            hasError={hasError}
           />
         </View>
       ) : (
@@ -111,6 +116,7 @@ export function HeightInput({
           value={value}
           onChangeText={onChangeText}
           suffix="cm"
+          hasError={hasError}
         />
       )}
     </View>
@@ -156,6 +162,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.md,
+  },
+  inputContainerError: {
+    borderColor: '#DC2626',
+    backgroundColor: '#FEF2F2',
   },
   inputWithSuffix: {
     flex: 1,

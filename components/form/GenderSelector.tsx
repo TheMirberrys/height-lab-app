@@ -5,15 +5,20 @@ import { typography } from '@/theme/typography';
 interface GenderSelectorProps {
   value: string;
   onValueChange: (gender: string) => void;
+  hasError?: boolean;
 }
 
-export function GenderSelector({ value, onValueChange }: GenderSelectorProps) {
+export function GenderSelector({ value, onValueChange, hasError = false }: GenderSelectorProps) {
   return (
     <View style={styles.inputGroup}>
-      <Text style={styles.label}>Gender</Text>
-      <View style={styles.genderButtons}>
+      <Text style={[styles.label, hasError && styles.labelError]}>Gender *</Text>
+      <View style={[styles.genderButtons, hasError && styles.genderButtonsError]}>
         <TouchableOpacity
-          style={[styles.genderButton, value === 'male' && styles.genderButtonActive]}
+          style={[
+            styles.genderButton, 
+            value === 'male' && styles.genderButtonActive,
+            hasError && !value && styles.genderButtonError
+          ]}
           onPress={() => onValueChange('male')}
         >
           <Text style={[styles.genderButtonText, value === 'male' && styles.genderButtonTextActive]}>
@@ -21,7 +26,11 @@ export function GenderSelector({ value, onValueChange }: GenderSelectorProps) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.genderButton, value === 'female' && styles.genderButtonActive]}
+          style={[
+            styles.genderButton, 
+            value === 'female' && styles.genderButtonActive,
+            hasError && !value && styles.genderButtonError
+          ]}
           onPress={() => onValueChange('female')}
         >
           <Text style={[styles.genderButtonText, value === 'female' && styles.genderButtonTextActive]}>
@@ -43,9 +52,15 @@ const styles = StyleSheet.create({
     color: colors.neutral[700],
     marginBottom: spacing.sm,
   },
+  labelError: {
+    color: '#DC2626',
+  },
   genderButtons: {
     flexDirection: 'row',
     gap: spacing.md,
+  },
+  genderButtonsError: {
+    // Container error styling if needed
   },
   genderButton: {
     flex: 1,
@@ -55,6 +70,10 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
     paddingVertical: spacing.md,
     alignItems: 'center',
+  },
+  genderButtonError: {
+    borderColor: '#DC2626',
+    backgroundColor: '#FEF2F2',
   },
   genderButtonActive: {
     backgroundColor: colors.primary[500],
