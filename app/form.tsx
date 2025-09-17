@@ -37,6 +37,9 @@ type FormData = {
   fatherHeight: string;
 };
 
+type ValidationErrors = {
+  [K in keyof FormData]?: boolean;
+};
 export default function FormPage() {
   const router = useRouter();
 
@@ -51,6 +54,7 @@ export default function FormPage() {
 
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   // Check if we should show the height at age 2 field
   const shouldShowHeightAt2 = isAgeGreaterThan2Years6Months(formData.childAge, ageUnit);
@@ -58,6 +62,10 @@ export default function FormPage() {
   // Generic setter to reduce repetition
   const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear validation error when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({ ...prev, [field]: false }));
+    }
   }, []);
 
   const handleHeightUnitChange = useCallback(
@@ -76,20 +84,29 @@ export default function FormPage() {
   );
 
   const handleSubmit = useCallback(() => {
-    // Check required fields
-    if (
-      !formData.childHeight ||
-      !formData.childAge ||
-      !formData.childGender ||
-      !formData.motherHeight ||
-      !formData.fatherHeight
-    ) {
-      Alert.alert('Missing Information', 'Please fill in all required fields marked with *');
+    // Check required fields and set validation errors
+    const requiredFields: (keyof FormData)[] = ['childHeight', 'childAge', 'childGender'];
+    const errors: ValidationErrors = {};
+    let hasErrors = false;
+
+    requiredFields.forEach(field => {
+      if (!formData[field]) {
+        errors[field] = true;
+        hasErrors = true;
+      }
+    });
+
+    if (hasErrors) {
+      setValidationErrors(errors);
       return;
     }
 
     // Validate numeric fields
-    const heightValidationError = validateHeights(formData, ['childHeight', 'motherHeight', 'fatherHeight']);
+    const heightFields = ['childHeight'];
+    if (formData.motherHeight) heightFields.push('motherHeight');
+    if (formData.fatherHeight) heightFields.push('fatherHeight');
+    
+    const heightValidationError = validateHeights(formData, heightFields);
     if (heightValidationError) {
       Alert.alert('Invalid Input', heightValidationError);
       return;
@@ -109,7 +126,7 @@ export default function FormPage() {
         childAgeYears: getAgeInYears(formData.childAge, ageUnit).toString(), // Convert for results page
       },
     });
-  }, [formData, router]);
+  }, [formData, router, ageUnit]);
 
   return (
     <KeyboardAvoidingView
@@ -125,7 +142,6 @@ export default function FormPage() {
           title="Child Details"
           icon={<User size={20} color={colors.primary[500]} />}
           showUnitsToggle
-          unitsLabel="Height Units"
           unitsOptions={['cm', 'inches']}
           selectedUnit={heightUnit}
           onUnitChange={(unit) => handleHeightUnitChange(unit as 'cm' | 'inches')}
@@ -133,15 +149,18 @@ export default function FormPage() {
           <GenderSelector
             value={formData.childGender}
             onValueChange={updateFormData('childGender')}
+            hasError={validationErrors.childGender}
           />
 
           <HeightInput
             label="Current Height"
             value={formData.childHeight}
             onChangeText={updateFormData('childHeight')}
+            required
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
+            hasError={validationErrors.childHeight}
           />
 
           <AgeInputs
@@ -149,6 +168,7 @@ export default function FormPage() {
             onValueChange={updateFormData('childAge')}
             ageUnit={ageUnit}
             onAgeUnitChange={setAgeUnit}
+            hasError={validationErrors.childAge}
           />
 
           {shouldShowHeightAt2 && (
@@ -173,6 +193,7 @@ export default function FormPage() {
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
+            helpText="Improves accuracy if known"
           />
 
           <HeightInput
@@ -182,6 +203,7 @@ export default function FormPage() {
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
+            helpText="Improves accuracy if known"
           />
         </FormSection>
 

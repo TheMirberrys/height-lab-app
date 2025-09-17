@@ -16,13 +16,15 @@ interface AgeInputsProps {
   onValueChange: (value: string) => void;
   ageUnit: 'years-months' | 'weeks';
   onAgeUnitChange: (unit: 'years-months' | 'weeks') => void;
+  hasError?: boolean;
 }
 
-const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
+const InputWithSuffix = ({ value, onChangeText, suffix, required = false, hasError = false }: {
   value: string;
   onChangeText: (text: string) => void;
   suffix: string;
   required?: boolean;
+  hasError?: boolean;
 }) => {
   const handleTextChange = (text: string) => {
     // Only allow positive integers (no decimals, no negative numbers)
@@ -31,7 +33,7 @@ const InputWithSuffix = ({ value, onChangeText, suffix, required = false }: {
   };
 
   return (
-    <View style={styles.inputContainer}>
+    <View style={[styles.inputContainer, hasError && styles.inputContainerError]}>
       <TextInput
         style={styles.inputWithSuffix}
         value={value}
@@ -47,7 +49,8 @@ export function AgeInputs({
   value,
   onValueChange,
   ageUnit,
-  onAgeUnitChange
+  onAgeUnitChange,
+  hasError = false
 }: AgeInputsProps) {
   // Parse current value based on unit
   const currentAge = parseAgeValue(value, ageUnit);
@@ -90,7 +93,7 @@ export function AgeInputs({
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>Age</Text>
+        <Text style={[styles.label, hasError && styles.labelError]}>Age</Text>
         <UnitToggle
           options={['Years & Months', 'Weeks']}
           selectedOption={ageUnit === 'years-months' ? 'Years & Months' : 'Weeks'}
@@ -106,11 +109,13 @@ export function AgeInputs({
             onChangeText={handleYearsChange}
             suffix="years"
             required
+            hasError={hasError}
           />
           <InputWithSuffix
             value={months > 0 ? months.toString() : ''}
             onChangeText={handleMonthsChange}
             suffix="months"
+            hasError={hasError}
           />
         </View>
       ) : (
@@ -119,7 +124,11 @@ export function AgeInputs({
           onChangeText={handleWeeksChange}
           suffix="weeks"
           required
+          hasError={hasError}
         />
+      )}
+      {hasError && (
+        <Text style={styles.errorText}>Please answer this question</Text>
       )}
     </View>
   );
@@ -140,6 +149,9 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.medium,
     color: colors.neutral[700],
   },
+  labelError: {
+    color: '#DC2626',
+  },
   ageRow: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -154,6 +166,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
     flex: 1,
   },
+  inputContainerError: {
+    borderColor: '#DC2626',
+    backgroundColor: '#FEF2F2',
+  },
   inputWithSuffix: {
     flex: 1,
     paddingVertical: spacing.md,
@@ -164,5 +180,11 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.neutral[400],
     marginLeft: spacing.xs,
+  },
+  errorText: {
+    fontSize: typography.sizes.xs,
+    color: '#DC2626',
+    marginTop: spacing.sm,
+    fontWeight: typography.weights.medium,
   },
 });
