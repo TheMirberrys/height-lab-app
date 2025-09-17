@@ -19,7 +19,7 @@ import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
 import { colors, spacing } from '@/theme/colors';
-import { typography } from '@/theme/typography';
+import { typography } from '@/theme/colors';
 
 type FormData = {
   childHeight: string;
@@ -179,7 +179,6 @@ export default function FormPage() {
             unit={heightUnit}
             showUnitToggle={false}
           />
-        </View>
 
         {/* Parent Information */}
         <FormSection title="Parent Heights" icon={<Ruler size={20} color={colors.success[500]} />}>
