@@ -98,7 +98,6 @@ export default function FormPage() {
 
     if (hasErrors) {
       setValidationErrors(errors);
-      setShowErrorMessage(true);
       return;
     }
 
