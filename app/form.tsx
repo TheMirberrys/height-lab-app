@@ -22,6 +22,12 @@ import { typography } from '@/theme/typography';
 import { convertHeight, validateHeights, validateHeightRange } from '@/utils/heightUtils';
 import { getAgeInYears } from '@/utils/ageUtils';
 
+// Helper function to check if age is greater than 2 years 6 months
+const isAgeGreaterThan2Years6Months = (ageValue: string, ageUnit: 'years-months' | 'weeks'): boolean => {
+  const ageInYears = getAgeInYears(ageValue, ageUnit);
+  return ageInYears > 2.5; // 2 years 6 months = 2.5 years
+};
+
 type FormData = {
   childHeight: string;
   childAge: string; // Unified age field
@@ -45,6 +51,9 @@ export default function FormPage() {
 
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
+
+  // Check if we should show the height at age 2 field
+  const shouldShowHeightAt2 = isAgeGreaterThan2Years6Months(formData.childAge, ageUnit);
 
   // Generic setter to reduce repetition
   const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
@@ -142,15 +151,17 @@ export default function FormPage() {
             onAgeUnitChange={setAgeUnit}
           />
 
-          <HeightInput
-            label="Height at Age 2 (optional)"
-            value={formData.heightAt2}
-            onChangeText={updateFormData('heightAt2')}
-            keyboardType="numeric"
-            helpText="Improves accuracy if known"
-            unit={heightUnit}
-            showUnitToggle={false}
-          />
+          {shouldShowHeightAt2 && (
+            <HeightInput
+              label="Height at Age 2 (optional)"
+              value={formData.heightAt2}
+              onChangeText={updateFormData('heightAt2')}
+              keyboardType="numeric"
+              helpText="Improves accuracy if known"
+              unit={heightUnit}
+              showUnitToggle={false}
+            />
+          )}
         </FormSection>
 
         {/* Parent Information Section */}
