@@ -17,7 +17,7 @@ import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
-import { colors, spacing } from '@/theme/colors';
+import { colors, spacing, borderRadius } from '@/theme/colors';
 import { typography } from '@/theme/typography';
 import { convertHeight, validateHeights, validateHeightRange } from '@/utils/heightUtils';
 import { getAgeInYears } from '@/utils/ageUtils';
