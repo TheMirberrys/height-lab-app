@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -11,7 +11,8 @@ import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
-import { colors, spacing, typography } from '@/theme/colors';
+import { colors, spacing } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 export default function FormPage() {
   const router = useRouter();
@@ -28,19 +29,18 @@ export default function FormPage() {
   });
 
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
-
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
 
   // Convert height values when unit changes
   const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
     if (!value || fromUnit === toUnit) return value;
-    const numValue = parseInt(value);
+    const numValue = parseFloat(value);
     if (isNaN(numValue)) return '';
     
     if (fromUnit === 'cm' && toUnit === 'inches') {
-      return Math.round(numValue / 2.54).toString();
+      return (numValue / 2.54).toFixed(1).replace(/\.0$/, '');
     } else if (fromUnit === 'inches' && toUnit === 'cm') {
-      return Math.round(numValue * 2.54).toString();
+      return (numValue * 2.54).toFixed(1).replace(/\.0$/, '');
     }
     return value;
   };
@@ -82,11 +82,6 @@ export default function FormPage() {
     >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
-      <ScrollView style={styles.scrollContainer}>
-        {/* Child Details */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderWithToggle}>
-            <View style={styles.sectionHeader}>
       {/* Global Height Unit Toggle */}
       <View style={styles.globalToggleContainer}>
         <UnitToggle
@@ -97,18 +92,12 @@ export default function FormPage() {
         />
       </View>
 
-              <User size={20} color={colors.primary[500]} />
-              <Text style={styles.sectionTitle}>Child Details</Text>
-            </View>
-            <View style={styles.unitsToggleContainer}>
-              <Text style={styles.unitsLabel}>Units</Text>
-              <UnitToggle
-                options={['cm', 'inches']}
-                selectedOption={heightUnit}
-                onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
-                inline
-              />
-            </View>
+      <ScrollView style={styles.scrollContainer}>
+        {/* Child Details */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <User size={20} color={colors.primary[500]} />
+            <Text style={styles.sectionTitle}>Child Details</Text>
           </View>
 
           <GenderSelector
@@ -145,7 +134,6 @@ export default function FormPage() {
             unit={heightUnit}
             showUnitToggle={false}
           />
-        </View>
         </View>
 
         {/* Parent Information */}
@@ -207,31 +195,16 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: spacing.xxxl,
   },
-  sectionHeaderWithToggle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
     fontSize: typography.sizes.lg,
     fontWeight: typography.weights.semibold,
     color: colors.neutral[800],
     marginLeft: spacing.sm,
-  },
-  unitsToggleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  unitsLabel: {
-    fontSize: typography.sizes.sm,
-    fontWeight: typography.weights.medium,
-    color: colors.neutral[600],
-    marginRight: spacing.md,
   },
   bottomSpacer: {
     height: 100, // Extra space to ensure button is accessible above mobile navigation
