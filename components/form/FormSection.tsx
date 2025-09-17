@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Text } from 'react-native';
 import { UnitToggle } from './UnitToggle';
 import { colors, spacing } from '@/theme/colors';
 
