@@ -92,9 +92,6 @@ export function HeightInput({
         )}
       </View>
       {helpText && <Text style={styles.helpText}>{helpText}</Text>}
-      {hasError && (
-        <Text style={styles.errorText}>Please answer this question</Text>
-      )}
       
       {unit === 'inches' ? (
         <View style={styles.feetInchesRow}>
@@ -121,6 +118,10 @@ export function HeightInput({
           suffix="cm"
           hasError={hasError}
         />
+      )}
+      
+      {hasError && (
+        <Text style={styles.errorText}>Please answer this question</Text>
       )}
     </View>
   );
