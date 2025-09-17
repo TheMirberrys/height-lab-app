@@ -48,7 +48,7 @@ export function AgeInputs({
   value,
   onValueChange,
   ageUnit,
-  onAgeUnitChange
+  onAgeUnitChange,
   error
 }: AgeInputsProps) {
   // Parse current value based on unit
