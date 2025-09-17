@@ -216,6 +216,8 @@ export default function FormPage() {
 }
 
 const styles = StyleSheet.create({
+        }
+  )
   container: {
     flex: 1,
     backgroundColor: colors.neutral[50],
