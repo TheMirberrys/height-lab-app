@@ -48,6 +48,10 @@ export default function FormPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
 
+  // Generic setter to reduce repetition
+  const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
   // Convert height values when unit changes
   const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
     if (!value || fromUnit === toUnit) return value;
@@ -136,15 +140,13 @@ export default function FormPage() {
         >
           <GenderSelector
             value={formData.childGender}
-            onValueChange={(gender) =>
-              setFormData((prev) => ({ ...prev, childGender: gender }))
-            }
+            onValueChange={updateFormData('childGender')}
           />
 
           <HeightInput
             label="Current Height"
             value={formData.childHeight}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, childHeight: text }))}
+            onChangeText={updateFormData('childHeight')}
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
@@ -154,9 +156,9 @@ export default function FormPage() {
             years={formData.childAgeYears}
             months={formData.childAgeMonths}
             weeks={formData.childAgeWeeks}
-            onYearsChange={(text) => setFormData((prev) => ({ ...prev, childAgeYears: text }))}
-            onMonthsChange={(text) => setFormData((prev) => ({ ...prev, childAgeMonths: text }))}
-            onWeeksChange={(text) => setFormData((prev) => ({ ...prev, childAgeWeeks: text }))}
+            onYearsChange={updateFormData('childAgeYears')}
+            onMonthsChange={updateFormData('childAgeMonths')}
+            onWeeksChange={updateFormData('childAgeWeeks')}
             ageUnit={ageUnit}
             onAgeUnitChange={setAgeUnit}
           />
@@ -164,7 +166,7 @@ export default function FormPage() {
           <HeightInput
             label="Height at Age 2 (optional)"
             value={formData.heightAt2}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, heightAt2: text }))}
+            onChangeText={updateFormData('heightAt2')}
             keyboardType="numeric"
             helpText="Improves accuracy if known"
             unit={heightUnit}
@@ -177,7 +179,7 @@ export default function FormPage() {
           <HeightInput
             label="Mother's Height"
             value={formData.motherHeight}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, motherHeight: text }))}
+            onChangeText={updateFormData('motherHeight')}
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
@@ -186,7 +188,7 @@ export default function FormPage() {
           <HeightInput
             label="Father's Height"
             value={formData.fatherHeight}
-            onChangeText={(text) => setFormData((prev) => ({ ...prev, fatherHeight: text }))}
+            onChangeText={updateFormData('fatherHeight')}
             keyboardType="numeric"
             unit={heightUnit}
             showUnitToggle={false}
