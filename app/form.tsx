@@ -22,9 +22,7 @@ import { typography } from '@/theme/typography';
 
 type FormData = {
   childHeight: string;
-  childAgeYears: string;
-  childAgeMonths: string;
-  childAgeWeeks: string;
+  childAge: string; // Unified age field
   childGender: string;
   heightAt2: string;
   motherHeight: string;
@@ -36,9 +34,7 @@ export default function FormPage() {
 
   const [formData, setFormData] = useState<FormData>({
     childHeight: '',
-    childAgeYears: '',
-    childAgeMonths: '',
-    childAgeWeeks: '',
+    childAge: '',
     childGender: '',
     heightAt2: '',
     motherHeight: '',
@@ -47,6 +43,22 @@ export default function FormPage() {
 
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
+
+  // Helper to extract years from age for calculations
+  const getAgeInYears = (): number => {
+    if (!formData.childAge) return 0;
+    
+    if (ageUnit === 'weeks') {
+      const weeks = parseInt(formData.childAge) || 0;
+      return weeks / 52;
+    } else {
+      // Parse years from "years,months" format
+      const parts = formData.childAge.split(',');
+      const years = parseInt(parts[0]) || 0;
+      const months = parseInt(parts[1]) || 0;
+      return years + (months / 12);
+    }
+  };
 
   // Validation helpers
   const validateHeights = (fields: (keyof FormData)[]) => {
@@ -103,7 +115,7 @@ export default function FormPage() {
     // Check required fields
     if (
       !formData.childHeight ||
-      !formData.childAgeYears ||
+      !formData.childAge ||
       !formData.childGender ||
       !formData.motherHeight ||
       !formData.fatherHeight
@@ -128,7 +140,10 @@ export default function FormPage() {
 
     router.push({
       pathname: '/results',
-      params: formData,
+      params: {
+        ...formData,
+        childAgeYears: getAgeInYears().toString(), // Convert for results page
+      },
     });
   }, [formData, router]);
 
@@ -173,12 +188,8 @@ export default function FormPage() {
           />
 
           <AgeInputs
-            years={formData.childAgeYears}
-            months={formData.childAgeMonths}
-            weeks={formData.childAgeWeeks}
-            onYearsChange={updateFormData('childAgeYears')}
-            onMonthsChange={updateFormData('childAgeMonths')}
-            onWeeksChange={updateFormData('childAgeWeeks')}
+            value={formData.childAge}
+            onValueChange={updateFormData('childAge')}
             ageUnit={ageUnit}
             onAgeUnitChange={setAgeUnit}
           />
