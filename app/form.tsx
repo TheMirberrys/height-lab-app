@@ -19,7 +19,7 @@ import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
 import { colors, spacing } from '@/theme/colors';
-import { typography } from '@/theme/typography'; // ✅ fixed import
+import { typography } from '@/theme/typography';
 
 type FormData = {
   childHeight: string;
@@ -49,7 +49,7 @@ export default function FormPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
 
-  // Convert height values when unit changes (support decimals)
+  // Convert height values when unit changes
   const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
     if (!value || fromUnit === toUnit) return value;
     const numValue = parseFloat(value);
@@ -65,7 +65,6 @@ export default function FormPage() {
   const handleHeightUnitChange = useCallback(
     (newUnit: 'cm' | 'inches') => {
       const oldUnit = heightUnit;
-      // Convert all height values using functional update
       setFormData((prev) => ({
         ...prev,
         childHeight: convertHeight(prev.childHeight, oldUnit, newUnit),
@@ -82,7 +81,6 @@ export default function FormPage() {
   const isNumeric = (v: string) => v !== '' && !isNaN(Number(v));
 
   const handleSubmit = useCallback(() => {
-    // Basic presence checks
     if (
       !formData.childHeight ||
       !formData.childAgeYears ||
@@ -94,20 +92,17 @@ export default function FormPage() {
       return;
     }
 
-    // Numeric validation for height fields
     if (!isNumeric(formData.childHeight) || !isNumeric(formData.motherHeight) || !isNumeric(formData.fatherHeight)) {
       Alert.alert('Invalid input', 'Please enter numeric values for heights.');
       return;
     }
 
-    // Optional: validate sensible ranges (example)
     const childHeightNum = Number(formData.childHeight);
     if (childHeightNum < 20 || childHeightNum > 250) {
       Alert.alert('Height out of range', 'Please enter a realistic child height.');
       return;
     }
 
-    // Navigate to results with form data (ensure the receiving route can parse these)
     router.push({
       pathname: '/results',
       params: formData,
@@ -123,14 +118,11 @@ export default function FormPage() {
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Child Details */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeaderWithToggle}>
-            <View style={styles.sectionHeader}>
-              <User size={20} color={colors.primary[500]} />
-              <Text style={styles.sectionTitle}>Child Details</Text>
-            </View>
-
+        {/* Child Details Section */}
+        <FormSection
+          title="Child Details"
+          icon={<User size={20} color={colors.primary[500]} />}
+          headerRight={
             <View style={styles.unitsToggleContainer}>
               <Text style={styles.unitsLabel}>Height Units</Text>
               <UnitToggle
@@ -138,11 +130,11 @@ export default function FormPage() {
                 selectedOption={heightUnit}
                 onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
                 inline
-                accessibilityLabel="Height unit toggle"
+                accessibilityLabel={`Select height unit, currently ${heightUnit}`}
               />
             </View>
-          </View>
-
+          }
+        >
           <GenderSelector
             value={formData.childGender}
             onValueChange={(gender) =>
@@ -171,17 +163,17 @@ export default function FormPage() {
           />
 
           <HeightInput
-            label="Height at Age 2"
+            label="Height at Age 2 (optional)"
             value={formData.heightAt2}
             onChangeText={(text) => setFormData((prev) => ({ ...prev, heightAt2: text }))}
             keyboardType="numeric"
-            helpText="Optional - improves accuracy if known"
+            helpText="Improves accuracy if known"
             unit={heightUnit}
             showUnitToggle={false}
           />
-        </View>
+        </FormSection>
 
-        {/* Parent Information */}
+        {/* Parent Information Section */}
         <FormSection title="Parent Heights" icon={<Ruler size={20} color={colors.success[500]} />}>
           <HeightInput
             label="Mother's Height"
@@ -225,25 +217,6 @@ const styles = StyleSheet.create({
     padding: spacing.xxl,
     flexGrow: 1,
   },
-  section: {
-    marginBottom: spacing.xxxl,
-  },
-  sectionHeaderWithToggle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  sectionTitle: {
-    fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.semibold,
-    color: colors.neutral[800],
-    marginLeft: spacing.sm,
-  },
   unitsToggleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -255,6 +228,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
   },
   bottomSpacer: {
-    height: 100, // Extra space to ensure button is accessible above mobile navigation
+    height: 100,
   },
 });
