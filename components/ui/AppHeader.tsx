@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { TrendingUp, ArrowLeft } from 'lucide-react-native';
 import { TouchableOpacity } from 'react-native';
-import { colors, spacing, typography } from '@/theme/colors';
+import { colors, spacing } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface AppHeaderProps {
   showBackButton?: boolean;

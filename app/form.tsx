@@ -1,20 +1,40 @@
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { User, Ruler } from 'lucide-react-native';
 import { AppHeader } from '@/components/ui/AppHeader';
 import { FormSection } from '@/components/form/FormSection';
-import { FormInput } from '@/components/form/FormInput';
 import { HeightInput } from '@/components/form/HeightInput';
 import { GenderSelector } from '@/components/form/GenderSelector';
 import { AgeInputs } from '@/components/form/AgeInputs';
 import { Button } from '@/components/ui/Button';
+import { UnitToggle } from '@/components/form/UnitToggle';
 import { colors, spacing } from '@/theme/colors';
+import { typography } from '@/theme/typography';
+
+type FormData = {
+  childHeight: string;
+  childAgeYears: string;
+  childAgeMonths: string;
+  childAgeWeeks: string;
+  childGender: string;
+  heightAt2: string;
+  motherHeight: string;
+  fatherHeight: string;
+};
 
 export default function FormPage() {
   const router = useRouter();
-  
-  const [formData, setFormData] = useState({
+
+  const [formData, setFormData] = useState<FormData>({
     childHeight: '',
     childAgeYears: '',
     childAgeMonths: '',
@@ -25,104 +45,151 @@ export default function FormPage() {
     fatherHeight: '',
   });
 
-  const [heightUnits, setHeightUnits] = useState({
-    childHeight: 'cm',
-    heightAt2: 'cm',
-    motherHeight: 'cm',
-    fatherHeight: 'cm',
-  });
-
+  const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
-  const handleSubmit = () => {
-    // Validate required fields
-    if (!formData.childHeight || !formData.childAgeYears || !formData.childGender || !formData.motherHeight || !formData.fatherHeight) {
+
+  // Convert height values when unit changes
+  const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
+    if (!value || fromUnit === toUnit) return value;
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return '';
+    if (fromUnit === 'cm' && toUnit === 'inches') {
+      return (numValue / 2.54).toFixed(1).replace(/\.0$/, '');
+    } else if (fromUnit === 'inches' && toUnit === 'cm') {
+      return (numValue * 2.54).toFixed(1).replace(/\.0$/, '');
+    }
+    return value;
+  };
+
+  const handleHeightUnitChange = useCallback(
+    (newUnit: 'cm' | 'inches') => {
+      const oldUnit = heightUnit;
+      setFormData((prev) => ({
+        ...prev,
+        childHeight: convertHeight(prev.childHeight, oldUnit, newUnit),
+        heightAt2: convertHeight(prev.heightAt2, oldUnit, newUnit),
+        motherHeight: convertHeight(prev.motherHeight, oldUnit, newUnit),
+        fatherHeight: convertHeight(prev.fatherHeight, oldUnit, newUnit),
+      }));
+      setHeightUnit(newUnit);
+    },
+    [heightUnit],
+  );
+
+  // helper for numeric validation
+  const isNumeric = (v: string) => v !== '' && !isNaN(Number(v));
+
+  const handleSubmit = useCallback(() => {
+    if (
+      !formData.childHeight ||
+      !formData.childAgeYears ||
+      !formData.childGender ||
+      !formData.motherHeight ||
+      !formData.fatherHeight
+    ) {
       Alert.alert('Missing Information', 'Please fill in all required fields marked with *');
       return;
     }
 
-    // Navigate to results with form data
+    if (!isNumeric(formData.childHeight) || !isNumeric(formData.motherHeight) || !isNumeric(formData.fatherHeight)) {
+      Alert.alert('Invalid input', 'Please enter numeric values for heights.');
+      return;
+    }
+
+    const childHeightNum = Number(formData.childHeight);
+    if (childHeightNum < 20 || childHeightNum > 250) {
+      Alert.alert('Height out of range', 'Please enter a realistic child height.');
+      return;
+    }
+
     router.push({
       pathname: '/results',
-      params: formData
+      params: formData,
     });
-  };
+  }, [formData, router]);
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
-      <ScrollView 
-        style={styles.content} 
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContainer}
-      >
-        {/* Child Information */}
-        <FormSection 
-          title="Child Details" 
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {/* Child Details Section */}
+        <FormSection
+          title="Child Details"
           icon={<User size={20} color={colors.primary[500]} />}
+          headerRight={
+            <View style={styles.unitsToggleContainer}>
+              <Text style={styles.unitsLabel}>Height Units</Text>
+              <UnitToggle
+                options={['cm', 'inches']}
+                selectedOption={heightUnit}
+                onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
+                inline
+                accessibilityLabel={`Select height unit, currently ${heightUnit}`}
+              />
+            </View>
+          }
         >
           <GenderSelector
             value={formData.childGender}
-            onValueChange={(gender) => setFormData({...formData, childGender: gender})}
+            onValueChange={(gender) =>
+              setFormData((prev) => ({ ...prev, childGender: gender }))
+            }
           />
 
           <HeightInput
             label="Current Height"
             value={formData.childHeight}
-            onChangeText={(text) => setFormData({...formData, childHeight: text})}
+            onChangeText={(text) => setFormData((prev) => ({ ...prev, childHeight: text }))}
             keyboardType="numeric"
-            unit={heightUnits.childHeight}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, childHeight: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
 
           <AgeInputs
             years={formData.childAgeYears}
             months={formData.childAgeMonths}
             weeks={formData.childAgeWeeks}
-            onYearsChange={(text) => setFormData({...formData, childAgeYears: text})}
-            onMonthsChange={(text) => setFormData({...formData, childAgeMonths: text})}
-            onWeeksChange={(text) => setFormData({...formData, childAgeWeeks: text})}
+            onYearsChange={(text) => setFormData((prev) => ({ ...prev, childAgeYears: text }))}
+            onMonthsChange={(text) => setFormData((prev) => ({ ...prev, childAgeMonths: text }))}
+            onWeeksChange={(text) => setFormData((prev) => ({ ...prev, childAgeWeeks: text }))}
             ageUnit={ageUnit}
             onAgeUnitChange={setAgeUnit}
           />
 
           <HeightInput
-            label="Height at Age 2"
+            label="Height at Age 2 (optional)"
             value={formData.heightAt2}
-            onChangeText={(text) => setFormData({...formData, heightAt2: text})}
+            onChangeText={(text) => setFormData((prev) => ({ ...prev, heightAt2: text }))}
             keyboardType="numeric"
-            helpText="Optional - improves accuracy if known"
-            unit={heightUnits.heightAt2}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, heightAt2: unit})}
+            helpText="Improves accuracy if known"
+            unit={heightUnit}
+            showUnitToggle={false}
           />
         </FormSection>
 
-        {/* Parent Information */}
-        <FormSection 
-          title="Parent Heights" 
-          icon={<Ruler size={20} color={colors.success[500]} />}
-        >
+        {/* Parent Information Section */}
+        <FormSection title="Parent Heights" icon={<Ruler size={20} color={colors.success[500]} />}>
           <HeightInput
             label="Mother's Height"
             value={formData.motherHeight}
-            onChangeText={(text) => setFormData({...formData, motherHeight: text})}
+            onChangeText={(text) => setFormData((prev) => ({ ...prev, motherHeight: text }))}
             keyboardType="numeric"
-            unit={heightUnits.motherHeight}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, motherHeight: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
 
           <HeightInput
             label="Father's Height"
             value={formData.fatherHeight}
-            onChangeText={(text) => setFormData({...formData, fatherHeight: text})}
+            onChangeText={(text) => setFormData((prev) => ({ ...prev, fatherHeight: text }))}
             keyboardType="numeric"
-            unit={heightUnits.fatherHeight}
-            onUnitChange={(unit) => setHeightUnits({...heightUnits, fatherHeight: unit})}
+            unit={heightUnit}
+            showUnitToggle={false}
           />
         </FormSection>
 
@@ -130,8 +197,10 @@ export default function FormPage() {
           title="Calculate Height Prediction"
           onPress={handleSubmit}
           variant="secondary"
+          accessibilityLabel="Calculate height prediction"
+          testID="calculate-button"
         />
-        
+
         <View style={styles.bottomSpacer} />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -143,14 +212,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.neutral[50],
   },
-  content: {
-    flex: 1,
-  },
   scrollContainer: {
     padding: spacing.xxl,
     flexGrow: 1,
   },
+  unitsToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  unitsLabel: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
+    color: colors.neutral[600],
+    marginRight: spacing.md,
+  },
   bottomSpacer: {
-    height: 100, // Extra space to ensure button is accessible above mobile navigation
+    height: 100,
   },
 });

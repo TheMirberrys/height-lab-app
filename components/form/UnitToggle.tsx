@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
-import { colors, spacing, typography, borderRadius } from '@/theme/colors';
+import { colors, spacing, borderRadius } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface UnitToggleProps {
   options: string[]; // expects exactly 2 options, e.g. ["°C", "°F"]

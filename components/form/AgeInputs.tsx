@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { TextInput } from 'react-native';
 import { UnitToggle } from './UnitToggle';
-import { colors, spacing, typography, borderRadius } from '@/theme/colors';
+import { colors, spacing, borderRadius } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface AgeInputsProps {
   years: string;
@@ -59,7 +60,6 @@ export function AgeInputs({
           onOptionChange={(option) => onAgeUnitChange(option === 'Years & Months' ? 'years-months' : 'weeks')}
           inline
         />
-      )}
       </View>
       
       {ageUnit === 'years-months' ? (

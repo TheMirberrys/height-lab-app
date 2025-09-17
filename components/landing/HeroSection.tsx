@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { colors, spacing, typography } from '@/theme/colors';
+import { colors, spacing } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface HeroSectionProps {
   onGetStarted: () => void;
