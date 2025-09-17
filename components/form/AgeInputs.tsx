@@ -4,39 +4,12 @@ import { UnitToggle } from './UnitToggle';
 import { colors, spacing, borderRadius } from '@/theme/colors';
 import { typography } from '@/theme/typography';
 
-// Helper functions for age conversions
-const convertYearsMonthsToWeeks = (years: number, months: number): number => {
-  return Math.round(years * 52 + months * 4.33);
-};
-
-const convertWeeksToYearsMonths = (weeks: number): { years: number; months: number } => {
-  const totalMonths = weeks / 4.33;
-  const years = Math.floor(totalMonths / 12);
-  const months = Math.round(totalMonths % 12);
-  return { years, months };
-};
-
-const parseAgeValue = (value: string, unit: 'years-months' | 'weeks') => {
-  if (unit === 'weeks') {
-    return { weeks: parseInt(value) || 0, years: 0, months: 0 };
-  } else {
-    // For years-months, value should be in format "years,months" or just "years"
-    const parts = value.split(',');
-    const years = parseInt(parts[0]) || 0;
-    const months = parseInt(parts[1]) || 0;
-    return { years, months, weeks: 0 };
-  }
-};
-
-const formatAgeValue = (years: number, months: number, weeks: number, unit: 'years-months' | 'weeks'): string => {
-  if (unit === 'weeks') {
-    return weeks > 0 ? weeks.toString() : '';
-  } else {
-    if (years === 0 && months === 0) return '';
-    if (months === 0) return years.toString();
-    return `${years},${months}`;
-  }
-};
+import { 
+  convertYearsMonthsToWeeks, 
+  convertWeeksToYearsMonths, 
+  parseAgeValue, 
+  formatAgeValue 
+} from '@/utils/ageUtils';
 
 interface AgeInputsProps {
   value: string; // Unified age value

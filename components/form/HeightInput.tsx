@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, TextInput, Platform } from 'react-native';
 import { UnitToggle } from './UnitToggle';
 import { colors, spacing, borderRadius } from '@/theme/colors';
 import { typography } from '@/theme/typography';
+import { convertHeight } from '@/utils/heightUtils';
 
 interface HeightInputProps {
   label: string;
@@ -61,20 +62,6 @@ export function HeightInput({
   const handleFeetInchesChange = (feet: string, inches: string) => {
     const totalInches = (parseInt(feet) || 0) * 12 + (parseInt(inches) || 0);
     onChangeText(totalInches.toString());
-  };
-
-  // Convert between cm and inches
-  const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
-    if (!value || fromUnit === toUnit) return value;
-    const numValue = parseInt(value);
-    if (isNaN(numValue)) return '';
-    
-    if (fromUnit === 'cm' && toUnit === 'inches') {
-      return Math.round(numValue / 2.54).toString();
-    } else if (fromUnit === 'inches' && toUnit === 'cm') {
-      return Math.round(numValue * 2.54).toString();
-    }
-    return value;
   };
 
   // Handle unit change with conversion

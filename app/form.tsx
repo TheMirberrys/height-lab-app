@@ -19,6 +19,8 @@ import { Button } from '@/components/ui/Button';
 import { UnitToggle } from '@/components/form/UnitToggle';
 import { colors, spacing } from '@/theme/colors';
 import { typography } from '@/theme/typography';
+import { convertHeight, validateHeights, validateHeightRange } from '@/utils/heightUtils';
+import { getAgeInYears } from '@/utils/ageUtils';
 
 type FormData = {
   childHeight: string;
@@ -44,57 +46,10 @@ export default function FormPage() {
   const [heightUnit, setHeightUnit] = useState<'cm' | 'inches'>('cm');
   const [ageUnit, setAgeUnit] = useState<'years-months' | 'weeks'>('years-months');
 
-  // Helper to extract years from age for calculations
-  const getAgeInYears = (): number => {
-    if (!formData.childAge) return 0;
-    
-    if (ageUnit === 'weeks') {
-      const weeks = parseInt(formData.childAge) || 0;
-      return weeks / 52;
-    } else {
-      // Parse years from "years,months" format
-      const parts = formData.childAge.split(',');
-      const years = parseInt(parts[0]) || 0;
-      const months = parseInt(parts[1]) || 0;
-      return years + (months / 12);
-    }
-  };
-
-  // Validation helpers
-  const validateHeights = (fields: (keyof FormData)[]) => {
-    for (const field of fields) {
-      const value = formData[field];
-      if (!value || isNaN(Number(value))) {
-        return `${field.replace(/([A-Z])/g, ' $1').toLowerCase()} is invalid`;
-      }
-    }
-    return null;
-  };
-
-  const validateHeightRange = (height: string, fieldName: string) => {
-    const heightNum = Number(height);
-    if (heightNum < 20 || heightNum > 250) {
-      return `${fieldName} is out of realistic range (20-250 ${heightUnit})`;
-    }
-    return null;
-  };
-
   // Generic setter to reduce repetition
   const updateFormData = useCallback((field: keyof FormData) => (value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
-  // Convert height values when unit changes
-  const convertHeight = (value: string, fromUnit: 'cm' | 'inches', toUnit: 'cm' | 'inches') => {
-    if (!value || fromUnit === toUnit) return value;
-    const numValue = parseFloat(value);
-    if (isNaN(numValue)) return '';
-    if (fromUnit === 'cm' && toUnit === 'inches') {
-      return (numValue / 2.54).toFixed(1).replace(/\.0$/, '');
-    } else if (fromUnit === 'inches' && toUnit === 'cm') {
-      return (numValue * 2.54).toFixed(1).replace(/\.0$/, '');
-    }
-    return value;
-  };
 
   const handleHeightUnitChange = useCallback(
     (newUnit: 'cm' | 'inches') => {
@@ -125,14 +80,14 @@ export default function FormPage() {
     }
 
     // Validate numeric fields
-    const heightValidationError = validateHeights(['childHeight', 'motherHeight', 'fatherHeight']);
+    const heightValidationError = validateHeights(formData, ['childHeight', 'motherHeight', 'fatherHeight']);
     if (heightValidationError) {
       Alert.alert('Invalid Input', heightValidationError);
       return;
     }
 
     // Validate height ranges
-    const rangeValidationError = validateHeightRange(formData.childHeight, 'Child height');
+    const rangeValidationError = validateHeightRange(formData.childHeight, 'Child height', heightUnit);
     if (rangeValidationError) {
       Alert.alert('Height Out of Range', rangeValidationError);
       return;
@@ -142,7 +97,7 @@ export default function FormPage() {
       pathname: '/results',
       params: {
         ...formData,
-        childAgeYears: getAgeInYears().toString(), // Convert for results page
+        childAgeYears: getAgeInYears(formData.childAge, ageUnit).toString(), // Convert for results page
       },
     });
   }, [formData, router]);
