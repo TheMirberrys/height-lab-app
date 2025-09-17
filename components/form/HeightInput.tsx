@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Platform } from 'react-native';
 import { UnitToggle } from './UnitToggle';
 import { colors, spacing, borderRadius } from '@/theme/colors';
@@ -16,14 +17,19 @@ interface HeightInputProps {
   error?: string;
 }
 
-const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
+const InputWithSuffix = ({
+  value,
+  onChangeText,
+  suffix,
+  style,
+}: {
   value: string;
   onChangeText: (text: string) => void;
   suffix: string;
   style?: any;
 }) => {
   const handleTextChange = (text: string) => {
-    // Only allow positive integers (no decimals, no negative numbers)
+    // Only allow positive integers
     const numericText = text.replace(/[^0-9]/g, '');
     onChangeText(numericText);
   };
@@ -34,46 +40,48 @@ const InputWithSuffix = ({ value, onChangeText, suffix, style }: {
         style={styles.inputWithSuffix}
         value={value}
         onChangeText={handleTextChange}
-        keyboardType="numeric"
+        keyboardType={Platform.OS === 'ios' ? 'number-pad' : 'numeric'}
       />
       <Text style={styles.suffix}>{suffix}</Text>
     </View>
   );
 };
 
-
-export function HeightInput({ 
-  label, 
-  value, 
-  onChangeText, 
-  required = false, 
+export function HeightInput({
+  label,
+  value,
+  onChangeText,
+  required = false,
   helpText,
   unit,
   onUnitChange,
-  showUnitToggle = true
-  error
+  showUnitToggle = true,
+  error,
 }: HeightInputProps) {
-  // For inches, split the value into feet and inches
-  const getFeetAndInches = (totalInches: string) => {
-    const inches = parseFloat(totalInches) || 0;
-    const feet = Math.floor(inches / 12);
-    const remainingInches = inches % 12;
-    return { feet: feet.toString(), inches: remainingInches.toString() };
-  };
+  const [feet, setFeet] = useState('');
+  const [inches, setInches] = useState('');
 
-  const handleFeetInchesChange = (feet: string, inches: string) => {
-    const totalInches = (parseInt(feet) || 0) * 12 + (parseInt(inches) || 0);
+  // Sync feet/inches state when value changes and unit is inches
+  useEffect(() => {
+    if (unit === 'inches') {
+      const totalInches = parseInt(value) || 0;
+      setFeet(Math.floor(totalInches / 12).toString());
+      setInches((totalInches % 12).toString());
+    }
+  }, [value, unit]);
+
+  const handleFeetInchesChange = (newFeet: string, newInches: string) => {
+    setFeet(newFeet);
+    setInches(newInches);
+    const totalInches = (parseInt(newFeet) || 0) * 12 + (parseInt(newInches) || 0);
     onChangeText(totalInches.toString());
   };
 
-  // Handle unit change with conversion
   const handleUnitChange = (newUnit: 'cm' | 'inches') => {
     const convertedValue = convertHeight(value, unit, newUnit);
     onChangeText(convertedValue);
-    onUnitChange(newUnit);
+    onUnitChange?.(newUnit);
   };
-
-  const { feet, inches } = unit === 'inches' ? getFeetAndInches(value) : { feet: '', inches: '' };
 
   return (
     <View style={styles.inputGroup}>
@@ -90,11 +98,11 @@ export function HeightInput({
           />
         )}
       </View>
+
       {helpText && <Text style={styles.helpText}>{helpText}</Text>}
-      
+
       {unit === 'inches' ? (
         <View style={styles.feetInchesRow}>
-
           <InputWithSuffix
             value={feet}
             onChangeText={(text) => handleFeetInchesChange(text, inches)}
@@ -109,13 +117,9 @@ export function HeightInput({
           />
         </View>
       ) : (
-        <InputWithSuffix
-          value={value}
-          onChangeText={onChangeText}
-          suffix="cm"
-        />
+        <InputWithSuffix value={value} onChangeText={onChangeText} suffix="cm" />
       )}
-      
+
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -143,15 +147,14 @@ const styles = StyleSheet.create({
   },
   feetInchesRow: {
     flexDirection: 'row',
-    gap: spacing.md,
   },
   feetInput: {
     flex: 1,
+    marginRight: spacing.md,
   },
   inchesInput: {
     flex: 1,
   },
-
   inputContainer: {
     backgroundColor: colors.white,
     borderWidth: 1,
@@ -171,15 +174,6 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.md,
     color: colors.neutral[400],
     marginLeft: spacing.xs,
-  },
-  input: {
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: colors.neutral[200],
-    borderRadius: borderRadius.sm,
-    padding: spacing.md,
-    fontSize: typography.sizes.md,
-    color: colors.neutral[800],
   },
   errorText: {
     color: colors.warning[700],
