@@ -80,7 +80,7 @@ export function HeightInput({
     <View style={styles.inputGroup}>
       <View style={styles.labelRow}>
         <Text style={[styles.label, hasError && styles.labelError]}>
-          {label} {required && '*'}
+          {label}
         </Text>
         {showUnitToggle && onUnitChange && (
           <UnitToggle

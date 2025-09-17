@@ -11,7 +11,7 @@ interface GenderSelectorProps {
 export function GenderSelector({ value, onValueChange, hasError = false }: GenderSelectorProps) {
   return (
     <View style={styles.inputGroup}>
-      <Text style={[styles.label, hasError && styles.labelError]}>Gender *</Text>
+      <Text style={[styles.label, hasError && styles.labelError]}>Gender</Text>
       <View style={[styles.genderButtons, hasError && styles.genderButtonsError]}>
         <TouchableOpacity
           style={[
