@@ -38,6 +38,9 @@ export function GenderSelector({ value, onValueChange, hasError = false }: Gende
           </Text>
         </TouchableOpacity>
       </View>
+      {hasError && (
+        <Text style={styles.errorText}>Please answer this question</Text>
+      )}
     </View>
   );
 }
@@ -86,6 +89,12 @@ const styles = StyleSheet.create({
   },
   genderButtonTextActive: {
     color: colors.white,
+  },
+  errorText: {
+    fontSize: typography.sizes.xs,
+    color: '#DC2626',
+    marginTop: spacing.sm,
+    fontWeight: typography.weights.medium,
   },
   errorText: {
     fontSize: typography.sizes.xs,
