@@ -82,22 +82,23 @@ export default function FormPage() {
     >
       <AppHeader showBackButton onBackPress={() => router.back()} />
 
-      {/* Global Height Unit Toggle */}
-      <View style={styles.globalToggleContainer}>
-        <UnitToggle
-          options={['cm', 'inches']}
-          selectedOption={heightUnit}
-          onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
-          inline
-        />
-      </View>
-
       <ScrollView style={styles.scrollContainer}>
         {/* Child Details */}
         <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <User size={20} color={colors.primary[500]} />
-            <Text style={styles.sectionTitle}>Child Details</Text>
+          <View style={styles.sectionHeaderWithToggle}>
+            <View style={styles.sectionHeader}>
+              <User size={20} color={colors.primary[500]} />
+              <Text style={styles.sectionTitle}>Child Details</Text>
+            </View>
+            <View style={styles.unitsToggleContainer}>
+              <Text style={styles.unitsLabel}>Height Units</Text>
+              <UnitToggle
+                options={['cm', 'inches']}
+                selectedOption={heightUnit}
+                onOptionChange={(option) => handleHeightUnitChange(option as 'cm' | 'inches')}
+                inline
+              />
+            </View>
           </View>
 
           <GenderSelector
@@ -177,17 +178,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.neutral[50],
   },
-  globalToggleContainer: {
-    backgroundColor: colors.white,
-    paddingHorizontal: spacing.xxl,
-    paddingVertical: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.neutral[100],
-    alignItems: 'flex-end',
-  },
-  content: {
-    flex: 1,
-  },
   scrollContainer: {
     padding: spacing.xxl,
     flexGrow: 1,
@@ -195,16 +185,31 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: spacing.xxxl,
   },
+  sectionHeaderWithToggle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.xl,
   },
   sectionTitle: {
     fontSize: typography.sizes.lg,
     fontWeight: typography.weights.semibold,
     color: colors.neutral[800],
     marginLeft: spacing.sm,
+  },
+  unitsToggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  unitsLabel: {
+    fontSize: typography.sizes.sm,
+    fontWeight: typography.weights.medium,
+    color: colors.neutral[600],
+    marginRight: spacing.md,
   },
   bottomSpacer: {
     height: 100, // Extra space to ensure button is accessible above mobile navigation
