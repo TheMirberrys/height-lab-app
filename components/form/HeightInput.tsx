@@ -79,7 +79,7 @@ export function HeightInput({
   return (
     <View style={styles.inputGroup}>
       <View style={styles.labelRow}>
-        <Text style={styles.label}>
+        <Text style={[styles.label, hasError && styles.labelError]}>
           {label} {required && '*'}
         </Text>
         {showUnitToggle && onUnitChange && (
@@ -137,6 +137,9 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.base,
     fontWeight: typography.weights.medium,
     color: colors.neutral[700],
+  },
+  labelError: {
+    color: '#DC2626',
   },
   helpText: {
     fontSize: typography.sizes.xs,
