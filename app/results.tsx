@@ -7,7 +7,8 @@ import { FinalPredictionCard } from '@/components/results/FinalPredictionCard';
 import { MethodCard } from '@/components/results/MethodCard';
 import { ImportantNote } from '@/components/results/ImportantNote';
 import { Button } from '@/components/ui/Button';
-import { colors, spacing, typography } from '@/theme/colors';
+import { colors, spacing } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface HeightPrediction {
   method: string;

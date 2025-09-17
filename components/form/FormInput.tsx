@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native';
-import { colors, spacing, typography, borderRadius } from '@/theme/colors';
+import { colors, spacing, borderRadius } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface FormInputProps {
   label: string;

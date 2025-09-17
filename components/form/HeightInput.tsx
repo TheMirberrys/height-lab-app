@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TextInput, Platform } from 'react-native';
 import { UnitToggle } from './UnitToggle';
-import { colors, spacing, typography, borderRadius } from '@/theme/colors';
+import { colors, spacing, borderRadius } from '@/theme/colors';
+import { typography } from '@/theme/typography';
 
 interface HeightInputProps {
   label: string;
